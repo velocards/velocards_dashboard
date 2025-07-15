@@ -65,7 +65,6 @@ const CloudflareTurnstile = forwardRef<TurnstileRef, CloudflareTurnstileProps>(
             theme: 'light',
             size: 'normal',
             action: action,
-            cData: typeof window !== 'undefined' ? window.location.hostname : 'localhost',
           }}
         />
       </div>
