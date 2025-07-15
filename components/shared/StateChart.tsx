@@ -23,7 +23,6 @@ const StateChart = ({
       },
       animations: {
         enabled: true,
-        easing: "easeinout",
         speed: 800,
       },
     },

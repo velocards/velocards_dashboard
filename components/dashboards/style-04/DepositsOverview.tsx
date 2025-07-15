@@ -233,7 +233,6 @@ const DepositsOverview = () => {
       },
       animations: {
         enabled: true,
-        easing: "easeinout",
         speed: 800,
       },
       offsetY: 10,

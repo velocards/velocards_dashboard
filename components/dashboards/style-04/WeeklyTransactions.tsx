@@ -54,8 +54,6 @@ const WeeklyTransactions = () => {
         colors: theme == "light" ? "#404A60" : "#EBECEF",
       },
       markers: {
-        width: 5,
-        height: 5,
         offsetX: dir == "rtl" ? 5 : -5,
       },
     },

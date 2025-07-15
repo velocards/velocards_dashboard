@@ -59,8 +59,6 @@ const CardHistory = () => {
         colors: theme == "light" ? "#404A60" : "#EBECEF",
       },
       markers: {
-        width: 8,
-        height: 8,
         offsetX: dir == "rtl" ? 5 : -5,
       },
     },
