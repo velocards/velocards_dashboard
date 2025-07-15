@@ -4,13 +4,6 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   
-  // Experimental features for App Router
-  experimental: {
-    serverActions: {
-      bodySizeLimit: '2mb',
-    },
-  },
-  
   // Image optimization
   images: {
     unoptimized: true, // Set to true since we're using static export
