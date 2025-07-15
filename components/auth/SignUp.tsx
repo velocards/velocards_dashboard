@@ -1,0 +1,327 @@
+"use client";
+import Link from "next/link";
+import { useState, useRef, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useAuthStore } from "@/stores/authStore";
+import { IconEye, IconEyeOff, IconBrandGoogle } from "@tabler/icons-react";
+import CloudflareTurnstile, { TurnstileRef } from "./CloudflareTurnstile";
+import { authApi } from "@/lib/api/auth";
+import SignUpPageVisual from "./SignUpPageVisual";
+
+// Form validation schema based on backend requirements
+const signUpSchema = z.object({
+  firstName: z.string().min(2, "First name must be at least 2 characters"),
+  lastName: z.string().min(2, "Last name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number"),
+  phone: z.string().optional(),
+});
+
+type SignUpFormData = z.infer<typeof signUpSchema>;
+
+const SignUp = () => {
+  const [showPass, setShowPass] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [showVerificationMessage, setShowVerificationMessage] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { register: registerUser, isLoading, error, clearError } = useAuthStore();
+  const turnstileRef = useRef<TurnstileRef>(null);
+
+  // Check for success parameter in URL
+  useEffect(() => {
+    const success = searchParams.get('success');
+    const email = searchParams.get('email');
+    
+    if (success === 'true' && email) {
+      setRegisteredEmail(decodeURIComponent(email));
+      setShowVerificationMessage(true);
+    }
+  }, [searchParams]);
+  
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpFormData>({
+    resolver: zodResolver(signUpSchema),
+  });
+
+  const onSubmit = async (data: SignUpFormData) => {
+    if (!turnstileToken) {
+      // Can't use toast, error will be shown in form
+      return;
+    }
+
+    try {
+      clearError();
+      // Include captcha token with registration data
+      await registerUser({ ...data, captchaToken: turnstileToken });
+      
+      // Show redirecting state immediately to prevent flash
+      setIsRedirecting(true);
+      router.push(`/auth/sign-up?success=true&email=${encodeURIComponent(data.email)}`);
+    } catch (err) {
+      // Error is already handled in the store and shown in the form
+      // Reset captcha on error
+      turnstileRef.current?.reset();
+      setTurnstileToken(null);
+    }
+  };
+
+  const handleGoogleSignUp = () => {
+    // Redirect to backend Google OAuth endpoint
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.velocards.com/api/v1';
+    window.location.href = `${apiUrl}/auth/google`;
+  };
+
+  return (
+    <div className="box p-3 md:p-4 xl:p-6">
+      <div className="max-w-[1400px] mx-auto grid grid-cols-12 gap-6 items-stretch">
+        <div className="col-span-12 lg:col-span-7 flex">
+          <div className="box bg-primary/5 dark:bg-bg3 lg:p-6 xl:p-8 border border-n30 dark:border-n500 w-full">
+            {isRedirecting ? (
+              <div className="text-center py-8">
+              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+              </div>
+              <h3 className="text-2xl font-semibold mb-4">Registration Successful!</h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Redirecting to verification page...
+              </p>
+            </div>
+            ) : showVerificationMessage ? (
+            <div className="text-center py-8">
+              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <IconEye className="w-8 h-8 text-green-600 dark:text-green-400" />
+              </div>
+              <h3 className="text-2xl font-semibold mb-4">Check Your Email!</h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                We've sent a verification email to:
+              </p>
+              <p className="text-lg font-medium text-primary mb-6">{registeredEmail}</p>
+              <p className="text-sm text-gray-500 mb-8">
+                Please click the link in the email to verify your account before logging in.
+              </p>
+              <div className="space-y-4">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      await authApi.resendVerification(registeredEmail);
+                      // Success message would show in the UI
+                    } catch (error) {
+                      // Error would be handled in the UI
+                    }
+                  }}
+                  className="btn-outline px-6"
+                >
+                  Resend Email
+                </button>
+                <p className="text-sm">
+                  Already verified?{" "}
+                  <Link className="text-primary" href="/auth/sign-in">
+                    Sign In
+                  </Link>
+                </p>
+              </div>
+            </div>
+            ) : (
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <h3 className="h3 mb-4">Let&apos;s Get Started!</h3>
+              <p className="md:mb-6 pb-4 mb-4 md:pb-6 bb-dashed text-sm md:text-base">
+                Please fill in your details to create your account
+              </p>
+              
+              {/* Show API error if any */}
+              {error && (
+                <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg text-sm">
+                  {error}
+                </div>
+              )}
+              
+              <div className="grid grid-cols-2 gap-x-4 xxxl:gap-x-6">
+                <div className="col-span-2 md:col-span-1">
+                  <label
+                    htmlFor="firstName"
+                    className="md:text-lg font-medium block mb-3"
+                  >
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    className={`w-full text-sm bg-n0 dark:bg-bg4 border ${
+                      errors.firstName ? 'border-red-500' : 'border-n30 dark:border-n500'
+                    } rounded-3xl px-3 md:px-6 py-2 md:py-3 mb-1`}
+                    placeholder="John"
+                    id="firstName"
+                    {...register("firstName")}
+                    disabled={isLoading}
+                  />
+                  {errors.firstName && (
+                    <p className="text-red-500 text-xs mb-3">{errors.firstName.message}</p>
+                  )}
+                </div>
+                <div className="col-span-2 md:col-span-1">
+                  <label
+                    htmlFor="lastName"
+                    className="md:text-lg font-medium block mb-3"
+                  >
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    className={`w-full text-sm bg-n0 dark:bg-bg4 border ${
+                      errors.lastName ? 'border-red-500' : 'border-n30 dark:border-n500'
+                    } rounded-3xl px-3 md:px-6 py-2 md:py-3 mb-1`}
+                    placeholder="Doe"
+                    id="lastName"
+                    {...register("lastName")}
+                    disabled={isLoading}
+                  />
+                  {errors.lastName && (
+                    <p className="text-red-500 text-xs mb-3">{errors.lastName.message}</p>
+                  )}
+                </div>
+              </div>
+              
+              <label htmlFor="email" className="md:text-lg font-medium block mb-3 mt-3">
+                Enter Your Email ID
+              </label>
+              <input
+                type="email"
+                className={`w-full text-sm bg-n0 dark:bg-bg4 border ${
+                  errors.email ? 'border-red-500' : 'border-n30 dark:border-n500'
+                } rounded-3xl px-3 md:px-6 py-2 md:py-3 mb-1`}
+                placeholder="Enter Your Email"
+                id="email"
+                {...register("email")}
+                disabled={isLoading}
+              />
+              {errors.email && (
+                <p className="text-red-500 text-xs mb-3">{errors.email.message}</p>
+              )}
+              
+              <label htmlFor="password" className="md:text-lg font-medium block mb-3 mt-3">
+                Create Password
+              </label>
+              <div className={`bg-n0 dark:bg-bg4 border ${
+                errors.password ? 'border-red-500' : 'border-n30 dark:border-n500'
+              } rounded-3xl px-3 md:px-6 py-2 md:py-3 mb-1 relative`}>
+                <input
+                  type={showPass ? "text" : "password"}
+                  className="w-11/12 text-sm bg-transparent"
+                  placeholder="Min 8 chars, 1 uppercase, 1 number"
+                  id="password"
+                  {...register("password")}
+                  disabled={isLoading}
+                />
+                <span
+                  onClick={() => setShowPass(!showPass)}
+                  className="absolute ltr:right-5 rtl:left-5 top-1/2 cursor-pointer -translate-y-1/2"
+                >
+                  {showPass ? <IconEye /> : <IconEyeOff />}
+                </span>
+              </div>
+              {errors.password && (
+                <p className="text-red-500 text-xs mb-3">{errors.password.message}</p>
+              )}
+              
+              <label
+                htmlFor="phone"
+                className="md:text-lg font-medium block mb-3 mt-3"
+              >
+                Phone Number (Optional)
+              </label>
+              <input
+                type="tel"
+                className="w-full text-sm bg-n0 dark:bg-bg4 border border-n30 dark:border-n500 rounded-3xl px-3 md:px-6 py-2 md:py-3 mb-5"
+                placeholder="Enter phone number"
+                id="phone"
+                {...register("phone")}
+                disabled={isLoading}
+              />
+
+              <p className="text-sm">
+                By clicking submit, you agree to{" "}
+                <Link className="text-primary" href="#">
+                  Terms of Use
+                </Link>
+                ,{" "}
+                <Link className="text-primary" href="#">
+                  Privacy Policy
+                </Link>
+                ,{" "}
+                <Link className="text-primary" href="#">
+                  E-sign
+                </Link>{" "}
+                &{" "}
+                <Link className="text-primary" href="#">
+                  Communication Authorization
+                </Link>
+                .
+              </p>
+              
+              <p className="mt-3 text-sm">
+                Already have an account?{" "}
+                <Link className="text-primary" href="/auth/sign-in">
+                  Sign In
+                </Link>
+              </p>
+              
+              {/* Cloudflare Turnstile */}
+              <CloudflareTurnstile
+                ref={turnstileRef}
+                action="register"
+                onVerify={(token) => setTurnstileToken(token)}
+                onError={() => {
+                  // Can't use toast, error will be shown in form
+                  setTurnstileToken(null);
+                }}
+                onExpire={() => {
+                  setTurnstileToken(null);
+                }}
+              />
+              
+              <div className="mt-6 flex items-center gap-3">
+                <button 
+                  type="submit"
+                  className="btn-primary px-5 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isLoading || !turnstileToken}
+                >
+                  {isLoading ? "Creating account..." : "Sign Up"}
+                </button>
+                
+                <span className="text-gray-500">or</span>
+                
+                <button
+                  type="button"
+                  onClick={handleGoogleSignUp}
+                  className="flex items-center gap-2 px-5 py-2 md:py-3 border border-n30 dark:border-n500 rounded-3xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                >
+                  <IconBrandGoogle className="w-5 h-5" />
+                  <span>Sign up with Google</span>
+                </button>
+              </div>
+                </form>
+            )}
+        </div>
+      </div>
+      <div className="col-span-12 lg:col-span-5">
+        <SignUpPageVisual />
+      </div>
+    </div>
+    </div>
+  );
+};
+
+export default SignUp;

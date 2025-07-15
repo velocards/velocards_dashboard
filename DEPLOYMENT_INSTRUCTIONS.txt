@@ -1,0 +1,121 @@
+VELOCARDS DASHBOARD - PRODUCTION DEPLOYMENT INSTRUCTIONS
+
+========================================
+WHAT'S INCLUDED IN THIS PACKAGE
+========================================
+
+1. Application Code:
+   - /app        - Next.js 14 app router pages
+   - /components - React components
+   - /lib        - API client and utilities
+   - /stores     - Zustand state management
+   - /types      - TypeScript definitions
+   - /public     - Static assets (images, fonts, styles)
+   - /utils      - Helper functions
+
+2. Configuration Files:
+   - package.json      - Dependencies and scripts
+   - next.config.js    - Next.js configuration
+   - tsconfig.json     - TypeScript configuration
+   - tailwind.config.ts - Tailwind CSS configuration
+   - .eslintrc.json    - ESLint configuration
+   - postcss.config.js - PostCSS configuration
+
+3. Production Files:
+   - .env.production   - Environment variables template
+   - .gitignore        - Git ignore rules
+
+========================================
+DEPLOYMENT STEPS
+========================================
+
+1. PREPARE ENVIRONMENT VARIABLES
+   - Copy .env.production to .env.local
+   - Add missing values:
+     * NEXT_PUBLIC_SUMSUB_TOKEN (get from Sumsub dashboard)
+     * NEXT_PUBLIC_GOOGLE_CLIENT_ID (get from Google Cloud Console)
+
+2. INSTALL DEPENDENCIES
+   npm install --legacy-peer-deps
+
+3. BUILD APPLICATION
+   npm run build
+
+4. DEPLOYMENT OPTIONS:
+
+   OPTION A: Vercel (Recommended)
+   - Push to GitHub
+   - Connect repository to Vercel
+   - Add environment variables in Vercel dashboard
+   - Deploy
+
+   OPTION B: Traditional Server
+   - Upload all files to server
+   - Install Node.js 18+
+   - Run: npm install --legacy-peer-deps
+   - Run: npm run build
+   - Run: npm start (or use PM2)
+
+   OPTION C: Docker
+   - Create Dockerfile:
+     FROM node:18-alpine
+     WORKDIR /app
+     COPY . .
+     RUN npm install --legacy-peer-deps
+     RUN npm run build
+     EXPOSE 3000
+     CMD ["npm", "start"]
+
+5. POST-DEPLOYMENT CHECKLIST
+   [ ] Test login functionality
+   [ ] Verify CAPTCHA is working
+   [ ] Check card creation
+   [ ] Test transactions
+   [ ] Verify KYC integration
+   [ ] Check invoice downloads
+
+========================================
+IMPORTANT NOTES
+========================================
+
+1. The application requires:
+   - Node.js 18 or higher
+   - NPM 8 or higher
+
+2. Backend API must be running at:
+   https://api.velocards.com/api/v1
+
+3. Required environment variables:
+   - NEXT_PUBLIC_API_URL
+   - NEXT_PUBLIC_APP_URL  
+   - NEXT_PUBLIC_TURNSTILE_SITE_KEY
+   - NEXT_PUBLIC_SUMSUB_TOKEN
+   - NEXT_PUBLIC_GOOGLE_CLIENT_ID
+
+4. For HTTPS/SSL:
+   - Configure in your hosting provider
+   - Or use a reverse proxy (Nginx/Apache)
+
+========================================
+FOLDER STRUCTURE
+========================================
+
+velocards-dashboard/
+├── app/           # Next.js pages
+├── components/    # React components  
+├── lib/           # API & utilities
+├── public/        # Static assets
+├── stores/        # State management
+├── types/         # TypeScript types
+├── utils/         # Helper functions
+└── [config files] # Configuration
+
+========================================
+SUPPORT
+========================================
+
+For deployment issues:
+- Check console for errors
+- Verify all environment variables
+- Ensure backend API is accessible
+- Check Node.js version compatibility

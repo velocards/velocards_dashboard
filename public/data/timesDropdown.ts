@@ -1,0 +1,1 @@
+export const options = ["Days", "Weeks", "Months"];
