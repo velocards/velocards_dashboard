@@ -253,20 +253,20 @@ const SignUp = () => {
 
               <p className="text-sm">
                 By clicking submit, you agree to{" "}
-                <Link className="text-primary" href="#">
-                  Terms of Use
+                <Link className="text-primary" href="/legal/terms-of-service">
+                  Terms of Service
                 </Link>
                 ,{" "}
-                <Link className="text-primary" href="#">
+                <Link className="text-primary" href="/legal/privacy-policy">
                   Privacy Policy
                 </Link>
                 ,{" "}
-                <Link className="text-primary" href="#">
-                  E-sign
+                <Link className="text-primary" href="/legal/kyc-aml-policy">
+                  KYC/AML Policy
                 </Link>{" "}
                 &{" "}
-                <Link className="text-primary" href="#">
-                  Communication Authorization
+                <Link className="text-primary" href="/legal/acceptable-use-policy">
+                  Acceptable Use Policy
                 </Link>
                 .
               </p>

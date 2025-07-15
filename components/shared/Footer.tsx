@@ -29,10 +29,13 @@ const Footer = () => {
 
         <ul className="flex gap-3 lg:gap-4 text-sm lg:text-base max-lg:justify-center max-lg:w-full">
           <li>
-            <Link href="#">Privacy Policy</Link>
+            <Link href="/legal/privacy-policy">Privacy Policy</Link>
           </li>
           <li>
-            <Link href="#">Terms of condition</Link>
+            <Link href="/legal/terms-of-service">Terms of Service</Link>
+          </li>
+          <li>
+            <Link href="/legal">Legal</Link>
           </li>
         </ul>
       </div>
