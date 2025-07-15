@@ -24,7 +24,7 @@
     "@sumsub/websdk": "^2.3.18",
     "@tabler/icons-react": "^3.19.0",
     "@tippyjs/react": "^4.2.6",
-    "apexcharts": "3.49.0",
+    "apexcharts": "^4.0.0",
     "axios": "^1.10.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
