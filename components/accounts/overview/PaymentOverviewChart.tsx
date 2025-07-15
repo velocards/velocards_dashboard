@@ -31,7 +31,6 @@ const PaymentOverviewChart = () => {
       },
       animations: {
         enabled: true,
-        easing: "easeinout",
         speed: 800,
       },
     },
