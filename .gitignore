@@ -84,3 +84,7 @@ temp/
 # package-lock.json
 # yarn.lock
 # pnpm-lock.yaml
+
+# Claude and Cursor
+.claude
+.cursorindexignore
