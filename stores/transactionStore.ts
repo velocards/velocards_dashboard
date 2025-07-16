@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { transactionApi, Transaction, TransactionStats, mapTransactionFromAPI } from '@/lib/api/transactions';
-import { getErrorMessage } from '@/lib/api/client';
+import { getErrorMessage } from '@/lib/api/secureClient';
 
 interface TransactionState {
   transactions: Transaction[];

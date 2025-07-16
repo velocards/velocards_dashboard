@@ -1,4 +1,4 @@
-import { apiClient } from './client';
+import { apiClient } from './secureClient';
 
 // Types
 export interface CardProgram {
@@ -166,17 +166,43 @@ export const cardApi = {
     }
   },
 
-  // Get full card details (SENSITIVE - includes unmasked PAN and CVV)
+  // Create secure session for viewing sensitive card details
+  createCardSession: async (cardId: string, purpose: 'view_pan' | 'view_cvv'): Promise<{
+    data: {
+      sessionId: string;
+      token: string;
+    }
+  }> => {
+    const response = await apiClient.post(`/cards/${cardId}/create-session`, { purpose });
+    return response.data;
+  },
+
+  // Get specific card detail using secure session
+  getSecureCardDetail: async (sessionId: string, token: string, field: 'pan' | 'cvv'): Promise<{
+    data: {
+      [key: string]: string;
+    }
+  }> => {
+    const response = await apiClient.post('/secure/card-details', {
+      sessionId,
+      token,
+      field
+    });
+    return response.data;
+  },
+
+  // DEPRECATED: This method is insecure and should not be used
+  // It will be removed in the next version
   getFullCardDetails: async (cardId: string): Promise<{ 
     data: {
       cardDetails: {
         id: string;
         cardToken: string;
-        pan: string;              // Full 16-digit card number
-        cvv: string;              // Real CVV (3 digits)
-        expiryMonth: string;      // e.g., "6"
-        expiryYear: string;       // e.g., "2028"
-        holderName: string;       // Cardholder full name
+        pan: string;
+        cvv: string;
+        expiryMonth: string;
+        expiryYear: string;
+        holderName: string;
         status: string;
         spendingLimit: number;
         spentAmount: number;
@@ -185,9 +211,21 @@ export const cardApi = {
       }
     }
   }> => {
-    console.log('🔐 Requesting full card details for:', cardId);
-    const response = await apiClient.get(`/cards/${cardId}/full-details`);
-    console.log('✅ Full card details received (sensitive data)');
-    return response.data;
+    // This method is deprecated for security reasons
+    
+    // For now, return masked data to prevent security issues
+    // Backend should also block this endpoint
+    const response = await apiClient.get(`/cards/${cardId}`);
+    const card = response.data.data;
+    
+    return {
+      data: {
+        cardDetails: {
+          ...card,
+          pan: '•••• •••• •••• ' + (card.last4 || '••••'),
+          cvv: '•••',
+        }
+      }
+    };
   },
 };

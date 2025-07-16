@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { apiClient } from '@/lib/api/client';
+import { apiClient } from '@/lib/api/secureClient';
 
 export interface Announcement {
   id: string;

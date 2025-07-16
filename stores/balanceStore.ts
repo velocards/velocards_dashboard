@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { balanceApi, BalanceTransaction, BalanceInfo } from '@/lib/api/balance';
-import { getErrorMessage } from '@/lib/api/client';
+import { getErrorMessage } from '@/lib/api/secureClient';
 
 interface BalanceState {
   balance: BalanceInfo | null;

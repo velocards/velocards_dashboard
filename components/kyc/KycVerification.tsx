@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import snsWebSdk from '@sumsub/websdk';
 import { useKycStore } from '@/stores/kycStore';
-import { apiClient } from '@/lib/api/client';
+import { apiClient } from '@/lib/api/secureClient';
 import { toast } from 'react-toastify';
 
 interface KycVerificationProps {
@@ -122,8 +122,10 @@ const KycVerification: React.FC<KycVerificationProps> = ({
       // Wait for container then launch SDK
       waitForContainer()
         .then((container) => {
-          // Clear any existing content
-          container.innerHTML = '';
+          // Clear any existing content safely
+          while (container.firstChild) {
+            container.removeChild(container.firstChild);
+          }
           
           const snsWebSdkInstance = (snsWebSdk
             .init(

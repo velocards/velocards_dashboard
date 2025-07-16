@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { IconBrandGoogle, IconLink, IconUnlink } from '@tabler/icons-react';
-import { apiClient } from '@/lib/api/client';
+import { apiClient } from '@/lib/api/secureClient';
 
 interface LinkedProvider {
   provider: string;

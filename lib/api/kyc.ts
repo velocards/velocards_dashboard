@@ -1,4 +1,4 @@
-import { apiClient } from './client';
+import { apiClient } from './secureClient';
 import type { ApiResponse } from '@/types/api';
 
 export interface KycInitiateResponse {

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { userApi, UserProfile, UserBalance, UserSettings, AvailableBalance, UpcomingRenewal, MonthlyFeeBreakdown } from '@/lib/api/user';
 import { UserStatistics, SpendingStatistics } from '@/types/statistics';
-import { getErrorMessage } from '@/lib/api/client';
+import { getErrorMessage } from '@/lib/api/secureClient';
 
 interface UserState {
   // Profile data

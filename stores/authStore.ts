@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { authApi, User, LoginRequest, RegisterRequest } from '@/lib/api/auth';
-import { tokenManager, getErrorMessage } from '@/lib/api/client';
+import { tokenManager, getErrorMessage } from '@/lib/api/secureClient';
 import { getKycStatus } from '@/lib/api/kyc';
 import { useKycStore } from './kycStore';
 

@@ -1,4 +1,4 @@
-import { apiClient } from './client';
+import { apiClient } from './secureClient';
 import { UserStatistics, SpendingStatistics } from '@/types/statistics';
 
 // Types

@@ -1,4 +1,4 @@
-import { apiClient, ApiResponse } from './client';
+import { apiClient, ApiResponse } from './secureClient';
 
 // Request types
 export interface LoginRequest {

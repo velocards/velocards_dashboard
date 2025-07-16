@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { cardApi, Card, CardProgram, CreateCardRequest } from '@/lib/api/cards';
-import { getErrorMessage } from '@/lib/api/client';
+import { getErrorMessage } from '@/lib/api/secureClient';
 
 interface CardState {
   cards: Card[];

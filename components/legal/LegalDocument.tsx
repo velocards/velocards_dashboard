@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import DOMPurify from 'dompurify';
 
 interface LegalDocumentProps {
   documentPath: string;
@@ -39,7 +40,16 @@ export default function LegalDocument({ documentPath, title }: LegalDocumentProp
           // Horizontal rules
           .replace(/^---$/gim, '<hr class="my-8 border-gray-200 dark:border-gray-800">');
         
-        setContent(`<div class="prose prose-gray dark:prose-invert max-w-none"><p class="mb-4">${html}</p></div>`);
+        // Sanitize HTML to prevent XSS attacks
+        const sanitizedHtml = DOMPurify.sanitize(
+          `<div class="prose prose-gray dark:prose-invert max-w-none"><p class="mb-4">${html}</p></div>`,
+          {
+            ALLOWED_TAGS: ['div', 'p', 'h1', 'h2', 'h3', 'h4', 'strong', 'em', 'ul', 'ol', 'li', 'a', 'code', 'hr', 'br'],
+            ALLOWED_ATTR: ['class', 'href', 'target', 'rel'],
+            ALLOW_DATA_ATTR: false
+          }
+        );
+        setContent(sanitizedHtml);
         setLoading(false);
       })
       .catch(err => {
