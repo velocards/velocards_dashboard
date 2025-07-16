@@ -54,6 +54,7 @@ const YourCards = () => {
   const [inlineNewLimit, setInlineNewLimit] = useState("");
   const [inlineUpdateError, setInlineUpdateError] = useState<string | null>(null);
   const [isInlineUpdating, setIsInlineUpdating] = useState(false);
+  const [inlineEditorPosition, setInlineEditorPosition] = useState<{ top: number; left: number } | null>(null);
   
   // Get real cards from store
   const { cards, fetchCards, freezeCard: freezeCardAction, unfreezeCard, deleteCard, isLoading } = useCardStore();
@@ -177,6 +178,7 @@ const YourCards = () => {
           setInlineLimitCardId(null);
           setInlineNewLimit('');
           setInlineUpdateError(null);
+          setInlineEditorPosition(null);
         }
       }
     };
@@ -690,6 +692,7 @@ const YourCards = () => {
       toast.success(`Limit ${changeText}`);
       setInlineLimitCardId(null);
       setInlineNewLimit('');
+      setInlineEditorPosition(null);
     } catch (error: any) {
       console.error('Failed to update limit:', error);
       setInlineUpdateError(error.response?.data?.error?.message || 'Failed to update limit');
@@ -911,96 +914,15 @@ const YourCards = () => {
                 </td>
                 <td className="hidden lg:table-cell py-3 sm:py-4 px-3 sm:px-4">
                   <div className="relative">
-                    {inlineLimitCardId === card.id ? (
-                      <div 
-                        className="inline-limit-editor absolute z-50 left-0 top-full mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-3 w-[240px]"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <p className="text-sm font-medium">Update Limit</p>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setInlineLimitCardId(null);
-                              setInlineNewLimit('');
-                              setInlineUpdateError(null);
-                            }}
-                            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                          >
-                            <i className="las la-times text-lg"></i>
-                          </button>
-                        </div>
-                        
-                        <div className="flex items-center justify-between mb-3">
-                          <span className="text-xs text-gray-600 dark:text-gray-400">
-                            Max allowed: <span className="font-semibold text-primary">${availableBalance?.availableBalance?.toFixed(2) || '0.00'}</span>
-                          </span>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              // Set the max allowed limit directly
-                              const maxLimit = card.spendingLimit + (availableBalance?.availableBalance || 0);
-                              setInlineNewLimit(maxLimit.toFixed(2));
-                              setInlineUpdateError(null);
-                            }}
-                            className="text-[11px] px-2 py-0.5 bg-primary/10 hover:bg-primary/20 text-primary rounded transition-colors"
-                          >
-                            Max
-                          </button>
-                        </div>
-                        
-                        {inlineUpdateError && (
-                          <div className="mb-2 text-xs text-red-600 dark:text-red-400">
-                            {inlineUpdateError}
-                          </div>
-                        )}
-                        
-                        <div className="flex gap-2">
-                          <input
-                              type="number"
-                              value={inlineNewLimit}
-                              onChange={(e) => {
-                                setInlineNewLimit(e.target.value);
-                                setInlineUpdateError(null);
-                              }}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                  e.preventDefault();
-                                  handleInlineLimitUpdate(card.id);
-                                } else if (e.key === 'Escape') {
-                                  setInlineLimitCardId(null);
-                                  setInlineNewLimit('');
-                                  setInlineUpdateError(null);
-                                }
-                              }}
-                              className="flex-1 px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-primary"
-                              placeholder="New limit amount"
-                              min="0"
-                              step="0.01"
-                              autoFocus
-                            />
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleInlineLimitUpdate(card.id);
-                            }}
-                            disabled={isInlineUpdating}
-                            className="px-2 py-1 bg-primary text-white text-sm rounded hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[32px]"
-                          >
-                            {isInlineUpdating ? (
-                              <i className="las la-spinner la-spin text-sm"></i>
-                            ) : (
-                              <i className="las la-check text-sm"></i>
-                            )}
-                          </button>
-                        </div>
-                      </div>
-                    ) : null}
-                    
                     <div 
                       className="inline-limit-editor group cursor-pointer"
                       onClick={(e) => {
                         e.stopPropagation();
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        setInlineEditorPosition({
+                          top: rect.top - 200, // Position above
+                          left: rect.left
+                        });
                         setInlineLimitCardId(card.id);
                         setInlineNewLimit(''); // Start empty for adding amount
                         setInlineUpdateError(null);
@@ -1125,6 +1047,102 @@ const YourCards = () => {
           </tbody>
         </table>
       </div>
+      
+      {/* Inline Limit Editor - Rendered outside table */}
+      {inlineLimitCardId && inlineEditorPosition && (
+        <div 
+          className="inline-limit-editor fixed z-50 bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 p-3 w-[240px]"
+          style={{
+            top: `${inlineEditorPosition.top}px`,
+            left: `${inlineEditorPosition.left}px`
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-medium">Update Limit</p>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setInlineLimitCardId(null);
+                setInlineNewLimit('');
+                setInlineUpdateError(null);
+                setInlineEditorPosition(null);
+              }}
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            >
+              <i className="las la-times text-lg"></i>
+            </button>
+          </div>
+          
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs text-gray-600 dark:text-gray-400">
+              Max allowed: <span className="font-semibold text-primary">${availableBalance?.availableBalance?.toFixed(2) || '0.00'}</span>
+            </span>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                const selectedCard = realCards.find(c => c.id === inlineLimitCardId);
+                if (selectedCard) {
+                  const maxLimit = selectedCard.spendingLimit + (availableBalance?.availableBalance || 0);
+                  setInlineNewLimit(maxLimit.toFixed(2));
+                  setInlineUpdateError(null);
+                }
+              }}
+              className="text-[11px] px-2 py-0.5 bg-primary/10 hover:bg-primary/20 text-primary rounded transition-colors"
+            >
+              Max
+            </button>
+          </div>
+          
+          {inlineUpdateError && (
+            <div className="mb-2 text-xs text-red-600 dark:text-red-400">
+              {inlineUpdateError}
+            </div>
+          )}
+          
+          <div className="flex gap-2">
+            <input
+              type="number"
+              value={inlineNewLimit}
+              onChange={(e) => {
+                setInlineNewLimit(e.target.value);
+                setInlineUpdateError(null);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleInlineLimitUpdate(inlineLimitCardId);
+                } else if (e.key === 'Escape') {
+                  setInlineLimitCardId(null);
+                  setInlineNewLimit('');
+                  setInlineUpdateError(null);
+                  setInlineEditorPosition(null);
+                }
+              }}
+              className="flex-1 px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-primary"
+              placeholder="New limit amount"
+              min="0"
+              step="0.01"
+              autoFocus
+            />
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleInlineLimitUpdate(inlineLimitCardId);
+              }}
+              disabled={isInlineUpdating}
+              className="px-2 py-1 bg-primary text-white text-sm rounded hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[32px]"
+            >
+              {isInlineUpdating ? (
+                <i className="las la-spinner la-spin text-sm"></i>
+              ) : (
+                <i className="las la-check text-sm"></i>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+      
       {tableData.length > 0 ? (
         isDashboard ? (
           <Link href="/cards/" className="text-primary font-semibold inline-flex gap-1 items-center mt-6 group">

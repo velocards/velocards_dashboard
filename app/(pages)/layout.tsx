@@ -32,9 +32,9 @@ export default function TestLayout({ children }: { children: ReactNode }) {
     return <VeloCardsLoader />;
   }
 
-  // Don't render anything if not authenticated (will redirect)
+  // Show loader while redirecting unauthenticated users
   if (!isAuthenticated) {
-    return null;
+    return <VeloCardsLoader message="Redirecting..." />;
   }
 
   return (
