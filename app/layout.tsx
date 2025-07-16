@@ -19,11 +19,16 @@ export const metadata: Metadata = {
   keywords: ["Virtual Cards", "Credit Cards", "Online Payments", "Digital Banking", "FinTech", "VeloCards", "DigiStreets", "Secure Payments"],
   icons: {
     icon: [
+      { url: "/images/velocards-logo.png", sizes: "192x192" },
       { url: "/images/velocards-logo.png", sizes: "32x32" },
       { url: "/images/velocards-logo.png", sizes: "16x16" }
     ],
     shortcut: "/images/velocards-logo.png",
     apple: "/images/velocards-logo.png",
+    other: {
+      rel: "icon",
+      url: "/images/velocards-logo.png",
+    },
   },
   openGraph: {
     title: "VeloCards - Virtual Cards for Modern Digital Payments",
