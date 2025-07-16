@@ -105,9 +105,9 @@ const PopularCards = () => {
         </div>
         
         <div className="flex flex-col xl:flex-row gap-4 xxl:gap-6">
-          {/* Glassmorphism Card Section - Standard credit card proportions */}
-          <div className="w-full xl:flex-shrink-0 xl:w-[475px]">
-            <div className="relative overflow-hidden rounded-2xl h-[300px]">
+          {/* Glassmorphism Card Section - Responsive width */}
+          <div className="w-full xl:flex-shrink-0 xl:w-[475px] max-w-full">
+            <div className="relative overflow-hidden rounded-2xl h-[280px] sm:h-[300px]">
               {/* Background geometric pattern */}
               <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-black">
                 {/* Floating geometric shapes */}
@@ -130,7 +130,7 @@ const PopularCards = () => {
                 <div className="absolute top-1/3 -right-4 w-10 h-10 bg-gradient-to-br from-orange-400 to-yellow-500 rounded-l-full z-20"></div>
                 
                 {/* Main card */}
-                <div className="relative h-full rounded-2xl overflow-hidden bg-gradient-to-br from-white/30 to-white/10 dark:from-gray-800/30 dark:to-gray-800/10 backdrop-blur-sm p-8 flex flex-col justify-between border-2 border-white/50 dark:border-gray-600/50 shadow-2xl">
+                <div className="relative h-full rounded-2xl overflow-hidden bg-gradient-to-br from-white/30 to-white/10 dark:from-gray-800/30 dark:to-gray-800/10 backdrop-blur-sm p-6 sm:p-8 flex flex-col justify-between border-2 border-white/50 dark:border-gray-600/50 shadow-2xl">
                   {/* Glass effect overlay */}
                   <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 dark:from-gray-700/10 dark:to-gray-700/5"></div>
                   
@@ -138,8 +138,8 @@ const PopularCards = () => {
                   <div className="relative z-10">
                     <div className="flex justify-between items-start mb-6">
                       <div>
-                        <p className="text-gray-600 dark:text-gray-400 text-sm mb-1">Selected BIN</p>
-                        <p className="text-gray-900 dark:text-gray-100 font-bold text-2xl">{selectedBin.bin}</p>
+                        <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm mb-1">Selected BIN</p>
+                        <p className="text-gray-900 dark:text-gray-100 font-bold text-xl sm:text-2xl">{selectedBin.bin}</p>
                       </div>
                       <div className="text-right">
                         <Image 
@@ -154,7 +154,7 @@ const PopularCards = () => {
                     <div className="space-y-3">
                       <div>
                         <p className="text-gray-600 dark:text-gray-400 text-xs mb-1">Issuing Bank</p>
-                        <p className="text-gray-900 dark:text-gray-100 font-semibold">{selectedBin.bank}</p>
+                        <p className="text-gray-900 dark:text-gray-100 font-semibold text-sm sm:text-base">{selectedBin.bank}</p>
                       </div>
                       
                       <div>
@@ -164,7 +164,7 @@ const PopularCards = () => {
                       
                       <div>
                         <p className="text-gray-600 dark:text-gray-400 text-xs mb-1">Card Number Preview</p>
-                        <p className="text-gray-900 dark:text-gray-100 font-mono text-lg">
+                        <p className="text-gray-900 dark:text-gray-100 font-mono text-base sm:text-lg">
                           {selectedBin.bin} •••• •••• ••••
                         </p>
                       </div>
@@ -181,9 +181,9 @@ const PopularCards = () => {
           
           {/* Remaining space container for dropdown and table */}
           <div className="w-full xl:flex-1 flex flex-col lg:flex-row gap-4 xxl:gap-6 min-w-0">
-            {/* Middle Section - BIN Selection Dropdown - 40% */}
+            {/* Middle Section - BIN Selection Dropdown */}
             <div className="w-full lg:w-2/5">
-              <div className="bg-secondary/5 dark:bg-bg3 rounded-xl p-4 h-[300px] flex flex-col justify-between">
+              <div className="bg-secondary/5 dark:bg-bg3 rounded-xl p-4 h-auto lg:h-[300px] flex flex-col justify-between">
               <div>
                 <label className="block text-sm font-medium mb-2">Select BIN</label>
                 <select 
@@ -223,16 +223,16 @@ const PopularCards = () => {
               </div>
             </div>
             
-            {/* Right Section - BIN Table - 60% */}
+            {/* Right Section - BIN Table */}
             <div className="w-full lg:w-3/5">
-              <div className="bg-secondary/5 dark:bg-bg3 rounded-xl overflow-hidden h-[300px] flex flex-col">
+              <div className="bg-secondary/5 dark:bg-bg3 rounded-xl overflow-hidden h-[250px] sm:h-[300px] flex flex-col">
               <div className="flex-shrink-0">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-                      <th className="text-left py-3 px-4 text-sm font-medium">BIN</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium">Popular Use</th>
-                      <th className="text-center py-3 px-4 text-sm font-medium">Action</th>
+                      <th className="text-left py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm font-medium">BIN</th>
+                      <th className="text-left py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm font-medium hidden sm:table-cell">Popular Use</th>
+                      <th className="text-center py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm font-medium">Action</th>
                     </tr>
                   </thead>
                 </table>
@@ -245,19 +245,19 @@ const PopularCards = () => {
                         key={bin.id} 
                         className={`border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${selectedBin.id === bin.id ? 'bg-primary/5' : ''}`}
                       >
-                        <td className="py-3 px-4">
+                        <td className="py-2 sm:py-3 px-3 sm:px-4">
                           <div>
-                            <p className="font-medium text-sm">{bin.bin}</p>
-                            <p className="text-xs text-gray-600 dark:text-gray-400">{bin.bin.startsWith('4') ? 'Visa' : 'Mastercard'}</p>
+                            <p className="font-medium text-xs sm:text-sm">{bin.bin}</p>
+                            <p className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">{bin.bin.startsWith('4') ? 'Visa' : 'Mastercard'}</p>
                           </div>
                         </td>
-                        <td className="py-3 px-4">
-                          <p className="text-sm">{bin.popularUse}</p>
+                        <td className="py-2 sm:py-3 px-3 sm:px-4 hidden sm:table-cell">
+                          <p className="text-xs sm:text-sm">{bin.popularUse}</p>
                         </td>
-                        <td className="py-3 px-4 text-center">
+                        <td className="py-2 sm:py-3 px-3 sm:px-4 text-center">
                           <button
                             onClick={() => setSelectedBin(bin)}
-                            className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+                            className={`px-2 sm:px-3 py-1 rounded-md text-[10px] sm:text-xs font-medium transition-colors ${
                               selectedBin.id === bin.id 
                                 ? 'bg-primary text-white' 
                                 : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'

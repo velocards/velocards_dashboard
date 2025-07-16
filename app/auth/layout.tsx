@@ -49,14 +49,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="relative min-h-screen bg-secondary/5 dark:bg-bg3">
-      <Image src={ellipse1} className="absolute top-16 md:top-5 right-10 w-auto h-auto" alt="ellipse" />
-      <Image src={ellipse2} className="absolute bottom-6 left-0 sm:left-32 w-auto h-auto" alt="ellipse" />
-      <div className="absolute top-0 left-0 p-6 lg:p-8 z-[10]">
-        <VeloCardsLogoWithText showTagline={true} />
+    <div className="relative min-h-screen bg-secondary/5 dark:bg-bg3 overflow-hidden">
+      {/* Abstract shapes - hidden on smaller screens, scaled down on medium screens */}
+      <Image 
+        src={ellipse1} 
+        className="absolute top-16 md:top-5 right-10 w-auto h-auto hidden lg:block lg:scale-75 xl:scale-100 opacity-60 xl:opacity-100" 
+        alt="ellipse" 
+      />
+      <Image 
+        src={ellipse2} 
+        className="absolute bottom-6 left-0 sm:left-32 w-auto h-auto hidden lg:block lg:scale-75 xl:scale-100 opacity-60 xl:opacity-100" 
+        alt="ellipse" 
+      />
+      
+      {/* Logo - responsive positioning */}
+      <div className="absolute top-4 left-4 sm:top-6 sm:left-6 lg:top-8 lg:left-8 z-[10]">
+        <VeloCardsLogoWithText showTagline={true} className="scale-90 sm:scale-100" />
       </div>
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="relative z-[2] max-w-[1416px] mx-auto px-3 pb-10">{children}</div>
+      
+      {/* Main content - better padding and max-width */}
+      <div className="flex items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8">
+        <div className="relative z-[2] w-full max-w-[1200px] mx-auto py-20 sm:py-16">{children}</div>
       </div>
       <ToastContainer 
         position="top-right"

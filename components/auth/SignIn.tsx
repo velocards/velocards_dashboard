@@ -76,10 +76,10 @@ const SignIn = () => {
   };
 
   return (
-    <div className="box p-3 md:p-4 xl:p-6">
-      <div className="max-w-[1400px] mx-auto grid grid-cols-12 gap-6 items-stretch">
-        <div className="col-span-12 lg:col-span-7 flex">
-          <div className="box bg-primary/5 dark:bg-bg3 lg:p-6 xl:p-8 border border-n30 dark:border-n500 w-full">
+    <div className="box p-3 sm:p-4 md:p-6 xl:p-8">
+      <div className="max-w-[1200px] mx-auto grid grid-cols-12 gap-4 sm:gap-6 lg:gap-8 items-stretch">
+        <div className="col-span-12 lg:col-span-7 xl:col-span-6 flex">
+          <div className="box bg-primary/5 dark:bg-bg3 p-4 sm:p-6 lg:p-8 xl:p-10 border border-n30 dark:border-n500 w-full">
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <div className="text-center">
@@ -89,8 +89,8 @@ const SignIn = () => {
             </div>
           ) : (
             <form onSubmit={handleSubmit(onSubmit)}>
-              <h3 className="h3 mb-4">Welcome Back!</h3>
-              <p className="md:mb-6 md:pb-6 mb-4 pb-4 bb-dashed text-sm md:text-base">
+              <h3 className="text-2xl sm:text-3xl font-semibold mb-3 sm:mb-4">Welcome Back!</h3>
+              <p className="mb-4 pb-4 sm:mb-6 sm:pb-6 bb-dashed text-sm sm:text-base">
                 Sign in to your account and join us
               </p>
           
@@ -101,14 +101,14 @@ const SignIn = () => {
             </div>
           )}
           
-          <label htmlFor="email" className="md:text-lg font-medium block mb-4">
+          <label htmlFor="email" className="text-base sm:text-lg font-medium block mb-3 sm:mb-4">
             Enter Your Email ID
           </label>
           <input
             type="email"
-            className={`w-full text-sm bg-n0 dark:bg-bg4 border ${
+            className={`w-full text-sm sm:text-base bg-n0 dark:bg-bg4 border ${
               errors.email ? 'border-red-500' : 'border-n30 dark:border-n500'
-            } rounded-3xl px-3 md:px-6 py-2 md:py-3 mb-2`}
+            } rounded-3xl px-4 sm:px-6 py-2.5 sm:py-3 mb-2`}
             placeholder="Enter Your Email"
             id="email"
             {...register("email")}
@@ -120,16 +120,16 @@ const SignIn = () => {
           
           <label
             htmlFor="password"
-            className="md:text-lg font-medium block mb-4 mt-3"
+            className="text-base sm:text-lg font-medium block mb-3 sm:mb-4 mt-3"
           >
             Enter Your Password
           </label>
           <div className={`bg-n0 dark:bg-bg4 border ${
             errors.password ? 'border-red-500' : 'border-n30 dark:border-n500'
-          } rounded-3xl px-3 md:px-6 py-2 md:py-3 mb-2 relative`}>
+          } rounded-3xl px-4 sm:px-6 py-2.5 sm:py-3 mb-2 relative`}>
             <input
               type={showPass ? "text" : "password"}
-              className="w-11/12 text-sm bg-transparent"
+              className="w-11/12 text-sm sm:text-base bg-transparent"
               placeholder="Enter Your Password"
               id="password"
               {...register("password")}
@@ -169,21 +169,21 @@ const SignIn = () => {
             }}
           />
           
-              <div className="mt-8 flex items-center gap-3">
+              <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center gap-3">
                 <button 
                   type="submit" 
-                  className="btn-primary px-5 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full sm:w-auto btn-primary px-6 py-2.5 sm:py-3 disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={isLoading || !turnstileToken}
                 >
                   {isLoading ? "Logging in..." : "Login"}
                 </button>
                 
-                <span className="text-gray-500">or</span>
+                <span className="text-gray-500 hidden sm:inline">or</span>
                 
                 <button
                   type="button"
                   onClick={handleGoogleSignIn}
-                  className="flex items-center gap-2 px-5 py-2 md:py-3 border border-n30 dark:border-n500 rounded-3xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 sm:py-3 border border-n30 dark:border-n500 rounded-3xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
                   <IconBrandGoogle className="w-5 h-5" />
                   <span>Sign in with Google</span>
@@ -193,7 +193,7 @@ const SignIn = () => {
           )}
           </div>
         </div>
-        <div className="col-span-12 lg:col-span-5">
+        <div className="col-span-12 lg:col-span-5 xl:col-span-6 hidden lg:block">
           <AuthPageVisual />
         </div>
       </div>

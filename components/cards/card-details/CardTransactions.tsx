@@ -88,50 +88,53 @@ const CardTransactionsChart = ({ isDetailsRevealed }: CardTransactionsChartProps
 
   return (
     <div className="box overflow-x-hidden mb-4 xxl:mb-6">
-      <div className="flex flex-wrap justify-between items-center gap-3 pb-4 lg:pb-6 mb-4 lg:mb-6 bb-dashed">
-        <h4 className="h4">Card Transactions</h4>
-        <div className="bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2.5 flex items-center gap-2">
-          <i className="las la-credit-card text-primary text-lg"></i>
-          <span className="text-base font-medium text-gray-900 dark:text-gray-100 font-mono">
+      <div className="flex flex-col sm:flex-row flex-wrap justify-between items-start sm:items-center gap-3 pb-4 lg:pb-6 mb-4 lg:mb-6 bb-dashed">
+        <h4 className="text-xl sm:text-2xl font-semibold">Card Transactions</h4>
+        <div className="bg-gray-100 dark:bg-gray-800 rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 flex items-center gap-2">
+          <i className="las la-credit-card text-primary text-base sm:text-lg"></i>
+          <span className="text-sm sm:text-base font-medium text-gray-900 dark:text-gray-100 font-mono">
             {isDetailsRevealed ? cardNumber : maskedCardNumber}
           </span>
         </div>
       </div>
       
       <div className="overflow-x-auto">
-        <table className="w-full whitespace-nowrap">
+        <table className="w-full">
           <thead>
             <tr className="bg-secondary/5 dark:bg-bg3">
-              <th className="text-start py-4 px-4">Merchant</th>
-              <th className="text-start py-4 px-4">Category</th>
-              <th className="text-start py-4 px-4">Amount</th>
-              <th className="text-start py-4 px-4">Status</th>
-              <th className="text-start py-4 px-4">Date</th>
+              <th className="text-start py-3 sm:py-4 px-3 sm:px-4 text-xs sm:text-sm">Merchant</th>
+              <th className="text-start py-3 sm:py-4 px-3 sm:px-4 text-xs sm:text-sm hidden md:table-cell">Category</th>
+              <th className="text-start py-3 sm:py-4 px-3 sm:px-4 text-xs sm:text-sm">Amount</th>
+              <th className="text-start py-3 sm:py-4 px-3 sm:px-4 text-xs sm:text-sm">Status</th>
+              <th className="text-start py-3 sm:py-4 px-3 sm:px-4 text-xs sm:text-sm hidden lg:table-cell">Date</th>
             </tr>
           </thead>
           <tbody>
             {transactions.map((tx) => (
               <tr key={tx.id} className="border-b border-gray-100 dark:border-gray-800 hover:bg-secondary/5 dark:hover:bg-bg3 transition-colors">
-                <td className="py-3 px-4">
-                  <div className="flex items-center gap-3">
+                <td className="py-2 sm:py-3 px-3 sm:px-4">
+                  <div className="flex items-center gap-2 sm:gap-3">
                     <Image 
                       src="/images/visa.png" 
-                      width={32} 
-                      height={32} 
+                      width={24} 
+                      height={24} 
                       alt={tx.merchant} 
-                      className="rounded"
+                      className="rounded w-6 h-6 sm:w-8 sm:h-8"
                     />
-                    <span className="font-medium">{tx.merchant}</span>
+                    <div className="min-w-0">
+                      <span className="font-medium text-sm sm:text-base block truncate">{tx.merchant}</span>
+                      <span className="text-[10px] sm:text-xs text-gray-500 lg:hidden">{tx.date}</span>
+                    </div>
                   </div>
                 </td>
-                <td className="py-3 px-4">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">{tx.category}</span>
+                <td className="py-2 sm:py-3 px-3 sm:px-4 hidden md:table-cell">
+                  <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{tx.category}</span>
                 </td>
-                <td className="py-3 px-4">
-                  <span className="font-semibold text-red-600">{tx.amount}</span>
+                <td className="py-2 sm:py-3 px-3 sm:px-4">
+                  <span className="font-semibold text-red-600 text-sm sm:text-base">{tx.amount}</span>
                 </td>
-                <td className="py-3 px-4">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                <td className="py-2 sm:py-3 px-3 sm:px-4">
+                  <span className={`inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium ${
                     tx.status === 'completed'
                       ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                       : tx.status === 'pending'
@@ -141,8 +144,8 @@ const CardTransactionsChart = ({ isDetailsRevealed }: CardTransactionsChartProps
                     {tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}
                   </span>
                 </td>
-                <td className="py-3 px-4">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">{tx.date}</span>
+                <td className="py-2 sm:py-3 px-3 sm:px-4 hidden lg:table-cell">
+                  <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{tx.date}</span>
                 </td>
               </tr>
             ))}

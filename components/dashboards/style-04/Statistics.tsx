@@ -198,12 +198,12 @@ const Statistics = () => {
   return (
     <>
       {statesData.map(({ amount, icon, title }) => (
-        <div key={title} className="col-span-12 sm:col-span-6 lg:col-span-3 box p-4 bg-n0 dark:bg-bg4 4xl:px-8 4xl:py-6">
-          <div className="mb-4 lg:mb-6 pb-4 lg:pb-6 bb-dashed">
-            <span className="font-medium">{title}</span>
+        <div key={title} className="col-span-12 xs:col-span-6 sm:col-span-6 lg:col-span-3 box p-3 sm:p-4 bg-n0 dark:bg-bg4 4xl:px-8 4xl:py-6">
+          <div className="mb-3 sm:mb-4 lg:mb-6 pb-3 sm:pb-4 lg:pb-6 bb-dashed">
+            <span className="font-medium text-sm sm:text-base">{title}</span>
           </div>
-          <div className="flex items-center gap-4 xl:gap-6">
-            <div className="w-14 xl:w-[72px] h-14 xl:h-[72px] flex items-center justify-center bg-primary/5 text-primary border border-n30 dark:border-n500 rounded-xl">{icon}</div>
+          <div className="flex items-center gap-3 sm:gap-4 xl:gap-6">
+            <div className="w-12 sm:w-14 xl:w-[72px] h-12 sm:h-14 xl:h-[72px] flex items-center justify-center bg-primary/5 text-primary border border-n30 dark:border-n500 rounded-xl">{icon}</div>
             <div>
               {title === "Available Balance" ? (
                 <AvailableBalance 
@@ -212,12 +212,12 @@ const Statistics = () => {
                   onAddBalance={toggleModal}
                 />
               ) : (
-                <h4 className="h4 mb-2 xxl:mb-4">{amount}</h4>
+                <h4 className="text-lg sm:text-xl lg:text-2xl font-semibold mb-1 sm:mb-2 xxl:mb-4">{amount}</h4>
               )}
               {title === "Active Card Balance" && (
                 <button 
                   onClick={toggleCardModal}
-                  className="flex items-center gap-1 bg-primary text-white hover:bg-primary/90 px-3 py-1.5 rounded-full text-xs font-medium transition-colors shadow-sm"
+                  className="flex items-center gap-1 bg-primary text-white hover:bg-primary/90 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-medium transition-colors shadow-sm"
                 >
                   <i className="las la-plus text-sm"></i>
                   <span>Add New Card</span>
@@ -226,7 +226,7 @@ const Statistics = () => {
               {title === "Current Tier" && (
                 <button 
                   onClick={toggleTierModal}
-                  className="flex items-center gap-1 border-2 border-green-500 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 px-3 py-1.5 rounded-full text-xs font-medium transition-colors"
+                  className="flex items-center gap-1 border-2 border-green-500 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-medium transition-colors"
                 >
                   <i className="las la-arrow-up text-sm"></i>
                   <span>Upgrade Tier</span>
@@ -235,7 +235,7 @@ const Statistics = () => {
               {title === "Yearly Spending" && (
                 <button 
                   onClick={() => setIsSpendingModalOpen(true)}
-                  className="flex items-center gap-1 border-2 border-green-500 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 px-3 py-1.5 rounded-full text-xs font-medium transition-colors"
+                  className="flex items-center gap-1 border-2 border-green-500 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-medium transition-colors"
                 >
                   <i className="las la-chart-bar text-sm"></i>
                   <span>Analyse Spending</span>

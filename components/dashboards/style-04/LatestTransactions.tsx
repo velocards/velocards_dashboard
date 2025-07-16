@@ -87,17 +87,17 @@ const LatestTransactions = () => {
         <p className="font-medium">Card Transactions</p>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full whitespace-nowrap">
+        <table className="w-full">
           <thead>
             <tr className="bg-secondary/5 dark:bg-bg3">
-              <th onClick={() => sortData("title")} className="text-start py-5 px-6 cursor-pointer min-w-[220px]">
-                <div className="flex items-center gap-1">
-                  Title <IconSelector size={18} />
+              <th onClick={() => sortData("title")} className="text-start py-3 sm:py-5 px-3 sm:px-6 cursor-pointer">
+                <div className="flex items-center gap-1 text-xs sm:text-sm">
+                  Title <IconSelector size={16} className="hidden sm:inline" />
                 </div>
               </th>
-              <th onClick={() => sortData("amount")} className="text-start py-5 cursor-pointer">
-                <div className="flex items-center gap-1">
-                  Amount <IconSelector size={18} />
+              <th onClick={() => sortData("amount")} className="text-start py-3 sm:py-5 px-3 sm:px-6 cursor-pointer">
+                <div className="flex items-center gap-1 text-xs sm:text-sm">
+                  Amount <IconSelector size={16} className="hidden sm:inline" />
                 </div>
               </th>
             </tr>
@@ -131,15 +131,15 @@ const LatestTransactions = () => {
                     setSelectedTransaction(transaction);
                     setIsModalOpen(true);
                   }}>
-                  <td className="py-2 px-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-gradient-to-r from-primary to-primary/60 rounded-full flex items-center justify-center">
-                        <i className={`las ${iconClass} text-white text-sm`}></i>
+                  <td className="py-2 px-3 sm:px-6">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-r from-primary to-primary/60 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i className={`las ${iconClass} text-white text-xs sm:text-sm`}></i>
                       </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium mb-1">{title}</p>
-                          <span className={`inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-xs font-medium capitalize ${
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
+                          <p className="font-medium text-sm sm:text-base truncate">{title}</p>
+                          <span className={`inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium capitalize ${
                             status === 'completed' 
                               ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                               : status === 'pending'
@@ -149,22 +149,22 @@ const LatestTransactions = () => {
                             {status}
                           </span>
                         </div>
-                        <div className="flex items-center gap-2 text-xs text-gray-500">
-                          <span>{time}</span>
+                        <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-gray-500 flex-wrap">
+                          <span className="whitespace-nowrap">{time}</span>
                           {category && (
                             <>
-                              <span>•</span>
-                              <span>{category}</span>
+                              <span className="hidden sm:inline">•</span>
+                              <span className="hidden sm:inline truncate">{category}</span>
                             </>
                           )}
                         </div>
                       </div>
                     </div>
                   </td>
-                  <td className="py-2 pr-6">
+                  <td className="py-2 pr-3 sm:pr-6">
                     <div className="text-right">
-                      <p className="font-semibold">${amount.toFixed(2)}</p>
-                      <p className="text-xs text-gray-500">USD</p>
+                      <p className="font-semibold text-sm sm:text-base">${amount.toFixed(2)}</p>
+                      <p className="text-[10px] sm:text-xs text-gray-500">USD</p>
                     </div>
                   </td>
                 </tr>

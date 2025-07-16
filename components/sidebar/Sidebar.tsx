@@ -17,17 +17,20 @@ export default function Sidebar({ sidebarIsOpen, setSidebarIsOpen }: Props) {
   const path = usePathname();
 
   useEffect(() => {
-    if (window.innerWidth > 1200) {
-      setSidebarIsOpen(true);
-    } else {
-      setSidebarIsOpen(false);
-    }
-    const handleResize = () => {
-      if (window.innerWidth < 1200) {
-        setSidebarIsOpen(false);
-      } else {
+    // Better breakpoint handling for tablets
+    const checkWidth = () => {
+      const width = window.innerWidth;
+      if (width >= 1024) { // lg breakpoint
         setSidebarIsOpen(true);
+      } else {
+        setSidebarIsOpen(false);
       }
+    };
+    
+    checkWidth();
+    
+    const handleResize = () => {
+      checkWidth();
     };
 
     window.addEventListener("resize", handleResize);
@@ -69,8 +72,8 @@ export default function Sidebar({ sidebarIsOpen, setSidebarIsOpen }: Props) {
               <Link href="/" className="logo-wrapper">
                 <VeloCardsLogoWithText showTagline={true} alignment="center" />
               </Link>
-              <button onClick={() => setSidebarIsOpen(false)} className="sidebar-close-btn xl:hidden">
-                <i className="las la-times"></i>
+              <button onClick={() => setSidebarIsOpen(false)} className="sidebar-close-btn lg:hidden">
+                <i className="las la-times text-xl"></i>
               </button>
             </div>
           </div>

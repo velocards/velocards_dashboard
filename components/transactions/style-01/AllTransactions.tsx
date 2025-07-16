@@ -368,38 +368,32 @@ const AllTransactions = () => {
       <AllTransactionsStatistics />
       
       <div className="box col-span-12">
-        <div className="flex flex-wrap gap-4 justify-between items-center bb-dashed mb-4 pb-4 lg:mb-6 lg:pb-6">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-between items-start sm:items-center bb-dashed mb-4 pb-4 lg:mb-6 lg:pb-6">
           <div className="flex items-center gap-3">
-            <h4 className="h4">All Transactions</h4>
-            {(cryptoDeposits.length > 0 || cardTransactions.length > 0) && (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
-                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                Live Data
-              </span>
-            )}
+            <h4 className="text-xl sm:text-2xl font-semibold">All Transactions</h4>
           </div>
-          <div className="flex items-center gap-4 flex-wrap grow sm:justify-end">
-            <div className="flex items-center gap-3 whitespace-nowrap">
-              <span className="text-sm font-medium">Filter by Type:</span>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 flex-wrap grow sm:justify-end w-full sm:w-auto">
+            <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+              <span className="text-xs sm:text-sm font-medium">Type:</span>
               <Select 
                 setSelected={setSelectedType} 
                 selected={selectedType} 
                 items={typeOptions} 
-                btnClass="rounded-[32px] bg-primary/5 md:py-2.5 min-w-[140px]" 
+                btnClass="rounded-[32px] bg-primary/5 py-2 sm:py-2.5 min-w-[100px] sm:min-w-[140px] text-sm" 
                 contentClass="w-full" 
               />
             </div>
-            <div className="flex items-center gap-3 whitespace-nowrap">
-              <span className="text-sm font-medium">Filter by Status:</span>
+            <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+              <span className="text-xs sm:text-sm font-medium">Status:</span>
               <Select 
                 setSelected={setSelectedStatus} 
                 selected={selectedStatus} 
                 items={statusOptions} 
-                btnClass="rounded-[32px] bg-primary/5 md:py-2.5 min-w-[140px]" 
+                btnClass="rounded-[32px] bg-primary/5 py-2 sm:py-2.5 min-w-[100px] sm:min-w-[140px] text-sm" 
                 contentClass="w-full" 
               />
             </div>
-            <SearchBar search={search} classes="bg-primary/5" />
+            <SearchBar search={search} classes="bg-primary/5 w-full sm:w-auto" />
           </div>
         </div>
       
@@ -412,37 +406,37 @@ const AllTransactions = () => {
             </div>
           </div>
         ) : (
-        <table className="w-full whitespace-nowrap">
+        <table className="w-full">
           <thead>
             <tr className="bg-secondary/5 dark:bg-bg3">
-              <th onClick={() => sortData("title")} className="text-start py-5 px-6 cursor-pointer hover:bg-secondary/10">
-                <div className="flex items-center gap-1">
-                  Transaction <IconSelector size={18} />
+              <th onClick={() => sortData("title")} className="text-start py-3 sm:py-5 px-3 sm:px-6 cursor-pointer hover:bg-secondary/10">
+                <div className="flex items-center gap-1 text-xs sm:text-sm">
+                  Transaction <IconSelector size={16} className="hidden sm:inline" />
                 </div>
               </th>
-              <th onClick={() => sortData("amount")} className="text-start py-5 px-6 cursor-pointer hover:bg-secondary/10">
-                <div className="flex items-center gap-1">
-                  Amount <IconSelector size={18} />
+              <th onClick={() => sortData("amount")} className="text-start py-3 sm:py-5 px-3 sm:px-6 cursor-pointer hover:bg-secondary/10">
+                <div className="flex items-center gap-1 text-xs sm:text-sm">
+                  Amount <IconSelector size={16} className="hidden sm:inline" />
                 </div>
               </th>
-              <th onClick={() => sortData("fee")} className="text-start py-5 px-6 cursor-pointer hover:bg-secondary/10">
-                <div className="flex items-center gap-1">
-                  Fee <IconSelector size={18} />
+              <th onClick={() => sortData("fee")} className="hidden md:table-cell text-start py-3 sm:py-5 px-3 sm:px-6 cursor-pointer hover:bg-secondary/10">
+                <div className="flex items-center gap-1 text-xs sm:text-sm">
+                  Fee <IconSelector size={16} className="hidden sm:inline" />
                 </div>
               </th>
-              <th onClick={() => sortData("type")} className="text-start py-5 px-6 cursor-pointer hover:bg-secondary/10">
-                <div className="flex items-center gap-1">
-                  Type <IconSelector size={18} />
+              <th onClick={() => sortData("type")} className="hidden sm:table-cell text-start py-3 sm:py-5 px-3 sm:px-6 cursor-pointer hover:bg-secondary/10">
+                <div className="flex items-center gap-1 text-xs sm:text-sm">
+                  Type <IconSelector size={16} className="hidden sm:inline" />
                 </div>
               </th>
-              <th onClick={() => sortData("status")} className="text-start py-5 px-6 w-[15%] cursor-pointer hover:bg-secondary/10">
-                <div className="flex items-center gap-1">
-                  Status <IconSelector size={18} />
+              <th onClick={() => sortData("status")} className="text-start py-3 sm:py-5 px-3 sm:px-6 cursor-pointer hover:bg-secondary/10">
+                <div className="flex items-center gap-1 text-xs sm:text-sm">
+                  Status <IconSelector size={16} className="hidden sm:inline" />
                 </div>
               </th>
-              <th onClick={() => sortData("date")} className="text-start py-5 px-6 cursor-pointer hover:bg-secondary/10">
-                <div className="flex items-center gap-1">
-                  Date <IconSelector size={18} />
+              <th onClick={() => sortData("date")} className="hidden lg:table-cell text-start py-3 sm:py-5 px-3 sm:px-6 cursor-pointer hover:bg-secondary/10">
+                <div className="flex items-center gap-1 text-xs sm:text-sm">
+                  Date <IconSelector size={16} className="hidden sm:inline" />
                 </div>
               </th>
             </tr>
@@ -456,47 +450,47 @@ const AllTransactions = () => {
                   setSelectedTransaction(tx);
                   setIsModalOpen(true);
                 }}>
-                <td className="py-4 px-6">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                <td className="py-3 sm:py-4 px-3 sm:px-6">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
                       tx.type === 'crypto' 
                         ? 'bg-gradient-to-r from-primary to-primary/60' 
                         : tx.type === 'card'
                         ? 'bg-gradient-to-r from-purple-500 to-purple-400'
                         : 'bg-gradient-to-r from-red-500 to-red-400'
                     }`}>
-                      <i className={`las ${tx.icon} text-white text-lg`}></i>
+                      <i className={`las ${tx.icon} text-white text-sm sm:text-lg`}></i>
                     </div>
-                    <div>
-                      <p className="font-medium">{tx.title}</p>
-                      <p className="text-xs text-gray-500">
+                    <div className="min-w-0">
+                      <p className="font-medium text-sm sm:text-base truncate">{tx.title}</p>
+                      <p className="text-xs text-gray-500 truncate">
                         {tx.type === 'crypto' ? tx.crypto : tx.type === 'card' ? tx.merchant : tx.description}
                       </p>
                       {tx.type === 'crypto' && tx.orderReference && (
-                        <p className="text-[10px] text-gray-400 mt-0.5">
+                        <p className="text-[10px] text-gray-400 mt-0.5 hidden sm:block">
                           Order: {tx.orderReference} • {tx.confirmations} confirmations
                         </p>
                       )}
                       {tx.type === 'card' && tx.cardLast4 && (
                         <p className="text-[10px] text-gray-400 mt-0.5">
-                          Card ending in {tx.cardLast4}
+                          Card •••• {tx.cardLast4}
                         </p>
                       )}
                     </div>
                   </div>
                 </td>
-                <td className="py-4 px-6">
-                  <span className={`font-semibold ${tx.amount.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
+                <td className="py-3 sm:py-4 px-3 sm:px-6">
+                  <span className={`font-semibold text-sm sm:text-base ${tx.amount.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
                     {tx.amount}
                   </span>
                 </td>
-                <td className="py-4 px-6">
-                  <span className={`text-sm ${tx.fee === '-' ? 'text-gray-400' : 'text-red-600'}`}>
+                <td className="hidden md:table-cell py-3 sm:py-4 px-3 sm:px-6">
+                  <span className={`text-xs sm:text-sm ${tx.fee === '-' ? 'text-gray-400' : 'text-red-600'}`}>
                     {tx.fee}
                   </span>
                 </td>
-                <td className="py-4 px-6">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                <td className="hidden sm:table-cell py-3 sm:py-4 px-3 sm:px-6">
+                  <span className={`inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium ${
                     tx.type === 'crypto' 
                       ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
                       : tx.type === 'card'
@@ -506,13 +500,13 @@ const AllTransactions = () => {
                     {tx.type === 'crypto' ? 'Deposit' : tx.type === 'card' ? 'Card' : 'Fee'}
                   </span>
                 </td>
-                <td className="py-4 px-6 w-[15%]" onClick={(e) => e.stopPropagation()}>
+                <td className="py-3 sm:py-4 px-3 sm:px-6" onClick={(e) => e.stopPropagation()}>
                   {tx.type === 'crypto' && tx.transactionHash && getBlockchainExplorerUrl(tx.currency!, tx.transactionHash) ? (
                     <a
                       href={getBlockchainExplorerUrl(tx.currency!, tx.transactionHash)!}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`group inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium cursor-pointer transition-all duration-200 min-w-[120px] justify-center ${
+                      className={`group inline-flex items-center px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium cursor-pointer transition-all duration-200 min-w-[80px] sm:min-w-[120px] justify-center ${
                         tx.status === 'completed' 
                           ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 hover:bg-blue-100 hover:text-blue-800 dark:hover:bg-blue-900 dark:hover:text-blue-200'
                           : tx.status === 'pending'
@@ -520,10 +514,10 @@ const AllTransactions = () => {
                           : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 hover:bg-blue-100 hover:text-blue-800 dark:hover:bg-blue-900 dark:hover:text-blue-200'
                       }`}
                     >
-                      <span className="group-hover:hidden text-sm">
+                      <span className="group-hover:hidden text-xs sm:text-sm">
                         {tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}
                       </span>
-                      <span className="hidden group-hover:inline-flex items-center gap-1 text-sm">
+                      <span className="hidden group-hover:inline-flex items-center gap-1 text-xs sm:text-sm">
                         View in Explorer
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -531,7 +525,7 @@ const AllTransactions = () => {
                       </span>
                     </a>
                   ) : (
-                    <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium min-w-[120px] justify-center ${
+                    <span className={`inline-flex items-center px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium min-w-[80px] sm:min-w-[120px] justify-center ${
                       tx.status === 'completed'
                         ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                         : tx.status === 'pending'
@@ -542,8 +536,8 @@ const AllTransactions = () => {
                     </span>
                   )}
                 </td>
-                <td className="py-4 px-6">
-                  <span className="text-sm text-gray-600">{tx.date}</span>
+                <td className="hidden lg:table-cell py-3 sm:py-4 px-3 sm:px-6">
+                  <span className="text-xs sm:text-sm text-gray-600">{tx.date}</span>
                 </td>
               </tr>
             ))}
