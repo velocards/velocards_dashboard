@@ -224,6 +224,9 @@ export const cardApi = {
           ...card,
           pan: '•••• •••• •••• ' + (card.last4 || '••••'),
           cvv: '•••',
+          expiryMonth: card.expiryMonth || '12',
+          expiryYear: card.expiryYear || '2025',
+          holderName: card.holderName || card.nickname || 'Card Holder',
         }
       }
     };

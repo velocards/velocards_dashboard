@@ -1335,11 +1335,11 @@ const YourCards = () => {
                                     <div>
                                       <p className="text-gray-600 dark:text-gray-400 text-xs mb-1">Expiry</p>
                                       <p className="text-gray-900 dark:text-gray-100 font-mono text-base select-all">
-                                        {`${fullCardDetails.expiryMonth.padStart(2, '0')}/${fullCardDetails.expiryYear}`}
+                                        {`${(fullCardDetails.expiryMonth || '').toString().padStart(2, '0')}/${fullCardDetails.expiryYear || ''}`}
                                       </p>
                                     </div>
                                     <button
-                                      onClick={() => copyToClipboard(`${fullCardDetails.expiryMonth.padStart(2, '0')}/${fullCardDetails.expiryYear}`, 'Expiry date')}
+                                      onClick={() => copyToClipboard(`${(fullCardDetails.expiryMonth || '').toString().padStart(2, '0')}/${fullCardDetails.expiryYear || ''}`, 'Expiry date')}
                                       className="text-gray-500 hover:text-primary transition-colors p-2"
                                       title="Copy expiry date"
                                     >

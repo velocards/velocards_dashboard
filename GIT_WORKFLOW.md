@@ -10,7 +10,7 @@
 
 ### 🔧 Development Branch (`develop`)
 - **Purpose**: Integration branch for features
-- **Deployment**: Can deploy to staging/test environment
+- **Deployment**: Automatically deploys to staging.velocards.com
 - **Testing**: All features tested here before merging to main
 - **Direct commits**: Only for hotfixes
 
@@ -153,8 +153,14 @@ git push origin develop
 ```
 feature/* → develop → main → production
    ↓          ↓        ↓
-  Local    Staging   app.velocards.com
+  Local    staging.   app.velocards.com
+          velocards.com
 ```
+
+### Environment URLs:
+- **Production**: https://app.velocards.com (main branch)
+- **Staging**: https://staging.velocards.com (develop branch)
+- **Preview**: Auto-generated URLs for PRs
 
 ## Common Commands Reference
 
