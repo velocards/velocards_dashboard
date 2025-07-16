@@ -167,7 +167,7 @@ export const cardApi = {
   },
 
   // Create secure session for viewing sensitive card details
-  createCardSession: async (cardId: string, purpose: 'view_pan' | 'view_cvv'): Promise<{
+  createCardSession: async (cardId: string, purpose: 'view_pan' | 'view_cvv' | 'view_full'): Promise<{
     data: {
       sessionId: string;
       token: string;
@@ -178,7 +178,7 @@ export const cardApi = {
   },
 
   // Get specific card detail using secure session
-  getSecureCardDetail: async (sessionId: string, token: string, field: 'pan' | 'cvv'): Promise<{
+  getSecureCardDetail: async (sessionId: string, token: string, field: 'pan' | 'cvv' | 'all'): Promise<{
     data: {
       [key: string]: string;
     }

@@ -60,7 +60,7 @@ const YourCards = () => {
   const { cards, fetchCards, freezeCard: freezeCardAction, unfreezeCard, deleteCard, isLoading } = useCardStore();
   
   // Get user balance and available balance from store
-  const { balance: userBalance, availableBalance, fetchBalance, fetchAvailableBalance } = useUserStore();
+  const { availableBalance, fetchBalance, fetchAvailableBalance } = useUserStore();
   
   // State for inline update limit
   const [isUpdatingLimit, setIsUpdatingLimit] = useState(false);
@@ -609,13 +609,34 @@ const YourCards = () => {
     
     setIsLoadingFullDetails(true);
     try {
-      const { data } = await cardApi.getFullCardDetails(selectedCardDetails.id);
-      setFullCardDetails(data.cardDetails);
+      // Step 1: Create secure session
+      const sessionResponse = await cardApi.createCardSession(selectedCardDetails.id, 'view_full');
+      const { sessionId, token } = sessionResponse.data;
+      
+      // Step 2: Get secure card details
+      const detailsResponse = await cardApi.getSecureCardDetail(sessionId, token, 'all');
+      
+      // Transform the response to match the expected format
+      const secureDetails = {
+        id: selectedCardDetails.id,
+        cardToken: selectedCardDetails.cardToken,
+        pan: detailsResponse.data.pan || detailsResponse.data.cardNumber,
+        cvv: detailsResponse.data.cvv,
+        expiryMonth: detailsResponse.data.expiryMonth,
+        expiryYear: detailsResponse.data.expiryYear,
+        holderName: detailsResponse.data.holderName || selectedCardDetails.nickname || 'Card Holder',
+        status: selectedCardDetails.status,
+        spendingLimit: selectedCardDetails.spendingLimit,
+        spentAmount: selectedCardDetails.spentAmount,
+        remainingBalance: selectedCardDetails.remainingBalance,
+        createdAt: selectedCardDetails.createdAt
+      };
+      
+      setFullCardDetails(secureDetails);
       setShowFullDetails(true);
       setRemainingTime(30);
     } catch (error: any) {
-      console.error('Failed to fetch card details:', error);
-      toast.error(error.response?.data?.error?.message || 'Failed to fetch card details');
+      toast.error(error.response?.data?.error?.message || 'Failed to fetch secure card details');
     } finally {
       setIsLoadingFullDetails(false);
     }
@@ -1821,7 +1842,6 @@ const YourCards = () => {
                             const startIndex = (transactionPage - 1) * transactionsPerPage;
                             const endIndex = startIndex + transactionsPerPage;
                             const paginatedTransactions = filteredTransactions.slice(startIndex, endIndex);
-                            const totalPages = Math.ceil(filteredTransactions.length / transactionsPerPage);
                             
                             return paginatedTransactions.map((transaction) => (
                           <tr key={transaction.id} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50">
