@@ -52,7 +52,7 @@ export const VeloCardsLogoWithText = ({
   alignment?: "center" | "bottom";
 }) => {
   return (
-    <div className={`flex ${alignment === "center" ? "items-center" : "items-end"} gap-3 ${className}`}>
+    <div className={`flex ${alignment === "center" ? "items-center" : "items-end"} gap-2 ${className}`}>
       <VeloCardsLogo width={70} height={70} />
       <div className="flex flex-col">
         <span 

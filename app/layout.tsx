@@ -18,9 +18,34 @@ export const metadata: Metadata = {
   description: "VeloCards by DigiStreets - Secure virtual credit cards for online shopping, subscriptions, and digital payments. Create unlimited cards instantly.",
   keywords: ["Virtual Cards", "Credit Cards", "Online Payments", "Digital Banking", "FinTech", "VeloCards", "DigiStreets", "Secure Payments"],
   icons: {
-    icon: "/images/velocards-logo.png",
+    icon: [
+      { url: "/images/velocards-logo.png", sizes: "32x32" },
+      { url: "/images/velocards-logo.png", sizes: "16x16" }
+    ],
     shortcut: "/images/velocards-logo.png",
     apple: "/images/velocards-logo.png",
+  },
+  openGraph: {
+    title: "VeloCards - Virtual Cards for Modern Digital Payments",
+    description: "Secure virtual credit cards for online shopping and digital payments",
+    url: "https://app.velocards.com",
+    siteName: "VeloCards",
+    images: [
+      {
+        url: "/images/velocards-logo.png",
+        width: 1200,
+        height: 630,
+        alt: "VeloCards Logo",
+      }
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "VeloCards - Virtual Cards for Modern Digital Payments",
+    description: "Secure virtual credit cards for online shopping and digital payments",
+    images: ["/images/velocards-logo.png"],
   },
 };
 

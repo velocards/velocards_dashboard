@@ -16,12 +16,12 @@ export default function Topbar({ sidebarIsOpen, setSidebarIsOpen }: Props) {
       <div className="topbar-inner">
         <div className="flex items-center justify-between px-3 sm:px-4 xxxl:px-6">
           <div className="flex items-center gap-4 xxl:gap-6">
-            <Link href="/" className="topbar-logo hidden shrink-0">
-              <VeloCardsLogoWithText showTagline={false} alignment="center" />
-            </Link>
             <button onClick={() => setSidebarIsOpen(!sidebarIsOpen)} aria-label="sidebar-toggle-btn" className="flex items-center rounded-s-2xl bg-primary px-0.5 py-3 text-xl text-n0" id="sidebar-toggle-btn">
               <i className="las la-angle-left text-lg"></i>
             </button>
+            <Link href="/dashboard" className="flex items-center shrink-0">
+              <VeloCardsLogoWithText showTagline={true} alignment="bottom" />
+            </Link>
           </div>
           
           {/* Right side items */}
