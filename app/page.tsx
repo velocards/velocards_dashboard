@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
+import VeloCardsLoader from '@/components/shared/VeloCardsLoader';
 
 export default function HomePage() {
   const router = useRouter();
@@ -25,12 +26,5 @@ export default function HomePage() {
   }, [isAuthenticated, isLoading, router]);
 
   // Show loading state while checking auth
-  return (
-    <div className="flex h-screen items-center justify-center bg-n0 dark:bg-bg4">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-        <p className="mt-4 text-gray-600 dark:text-gray-400">Redirecting...</p>
-      </div>
-    </div>
-  );
+  return <VeloCardsLoader message="Redirecting..." />;
 }

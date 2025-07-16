@@ -2,7 +2,6 @@
 import useDropdown from "@/utils/useDropdown";
 import { IconLifebuoy, IconLogout, IconUser } from "@tabler/icons-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/authStore";
 import { useUserStore } from "@/stores/userStore";
 import { toast } from "react-toastify";
@@ -26,7 +25,6 @@ export const profileLinks = [
 ];
 const Profile = () => {
   const { open, ref, toggleOpen } = useDropdown();
-  const router = useRouter();
   const { user, logout } = useAuthStore();
   const { profile, fetchProfile } = useUserStore();
   
@@ -50,7 +48,7 @@ const Profile = () => {
     try {
       await logout();
       toast.success("Logged out successfully");
-      router.push("/auth/sign-in");
+      // Don't manually redirect - let the auth state handle it
     } catch (error) {
       toast.error("Failed to logout");
     }

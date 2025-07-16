@@ -2,7 +2,6 @@
 import { IconEye, IconEyeOff, IconBrandGoogle } from "@tabler/icons-react";
 import Link from "next/link";
 import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -12,7 +11,7 @@ import AuthPageVisual from "./AuthPageVisual";
 
 // Form validation schema
 const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  email: z.string().min(1, "Email is required").email({ message: "Invalid email address" }),
   password: z.string().min(1, "Password is required"),
 });
 
@@ -22,7 +21,6 @@ const SignIn = () => {
   const [showPass, setShowPass] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [loginError, setLoginError] = useState<string>("");
-  const router = useRouter();
   const { login, isLoading, error, clearError } = useAuthStore();
   const turnstileRef = useRef<TurnstileRef>(null);
   
@@ -46,8 +44,8 @@ const SignIn = () => {
       // Include captcha token with login data
       await login({ ...data, captchaToken: turnstileToken });
       
-      // If login succeeds, redirect to dashboard
-      router.push("/dashboard/");
+      // Don't redirect here - let the auth layout handle it
+      // This prevents multiple redirects and loading states
     } catch (err: any) {
       // Email verification errors are handled by the auth store
       // Only handle other errors here

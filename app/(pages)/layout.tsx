@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/authStore";
 import EmailVerificationBanner from "@/components/shared/EmailVerificationBanner";
 import NotificationModal from "@/components/modals/NotificationModal";
+import VeloCardsLoader from "@/components/shared/VeloCardsLoader";
 
 export default function TestLayout({ children }: { children: ReactNode }) {
   const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
@@ -16,7 +17,7 @@ export default function TestLayout({ children }: { children: ReactNode }) {
   const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
 
   useEffect(() => {
-    // Only check auth once when component mounts
+    // Check auth status when component mounts
     checkAuth();
   }, []); // Empty dependency array to run only once
 
@@ -28,14 +29,7 @@ export default function TestLayout({ children }: { children: ReactNode }) {
 
   // Show loading state while checking auth
   if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
-        </div>
-      </div>
-    );
+    return <VeloCardsLoader />;
   }
 
   // Don't render anything if not authenticated (will redirect)

@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/authStore";
 import { ToastContainer } from "react-toastify";
 import { VeloCardsLogoWithText } from "@/components/icons/VeloCardsLogo";
+import VeloCardsLoader from "@/components/shared/VeloCardsLoader";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { theme } = useTheme();
@@ -22,30 +23,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // If user is already authenticated, redirect to dashboard
-    // Add a small delay to prevent flashing
     if (!isLoading && isAuthenticated) {
-      const timer = setTimeout(() => {
-        router.push("/dashboard/");
-      }, 100);
-      return () => clearTimeout(timer);
+      router.replace("/dashboard/");
     }
   }, [isAuthenticated, isLoading, router]);
 
   // Show loading state while checking auth
   if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-secondary/5 dark:bg-bg3">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
-        </div>
-      </div>
-    );
+    return <VeloCardsLoader />;
   }
 
-  // Don't render auth pages if authenticated (will redirect)
+  // Show loading overlay while redirecting authenticated users
   if (isAuthenticated) {
-    return null;
+    return <VeloCardsLoader message="Redirecting to dashboard..." />;
   }
 
   return (
