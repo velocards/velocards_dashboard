@@ -820,47 +820,48 @@ const YourCards = () => {
           </button>
         </div>
       </div>
-      <div className={`overflow-x-auto mb-4 lg:mb-6 ${isDashboard ? '' : 'min-h-[400px]'}`}>
-        <table className="w-full whitespace-nowrap table-fixed">
+      <div className={`overflow-x-auto -mx-4 sm:mx-0 mb-4 lg:mb-6 ${isDashboard ? '' : 'min-h-[400px]'}`}>
+        <table className="w-full whitespace-nowrap table-fixed min-w-[600px]">
           <colgroup>
-            <col className="w-[35%]" />
-            <col className="w-[15%]" />
-            <col className="w-[15%]" />
-            <col className="w-[15%]" />
-            <col className="w-[12%]" />
-            <col className="w-[8%]" />
+            <col className="w-[40%] sm:w-[35%]" />
+            <col className="w-[20%] sm:w-[15%]" />
+            <col className="w-[0%] sm:w-[15%]" />
+            <col className="w-[0%] lg:w-[15%]" />
+            <col className="w-[25%] sm:w-[12%]" />
+            <col className="w-[15%] sm:w-[8%]" />
           </colgroup>
           <thead>
             <tr className="bg-secondary/5 dark:bg-bg3">
-              <th onClick={() => sortData("nickname")} className="text-start py-4 px-6 cursor-pointer">
+              <th onClick={() => sortData("nickname")} className="text-start py-3 sm:py-4 px-3 sm:px-6 cursor-pointer">
                 <div className="flex items-center gap-1">
-                  Card Details
+                  <span className="hidden sm:inline">Card Details</span>
+                  <span className="sm:hidden">Card</span>
                   <IconSelector size={18} />
                 </div>
               </th>
-              <th onClick={() => sortData("balance")} className="text-start py-4 px-4 cursor-pointer">
+              <th onClick={() => sortData("balance")} className="text-start py-3 sm:py-4 px-3 sm:px-4 cursor-pointer">
                 <div className="flex items-center gap-1">
                   Balance
-                  <IconSelector size={18} />
+                  <IconSelector size={18} className="hidden sm:inline" />
                 </div>
               </th>
-              <th onClick={() => sortData("spentAmount")} className="text-start py-4 px-4 cursor-pointer">
+              <th onClick={() => sortData("spentAmount")} className="hidden sm:table-cell text-start py-3 sm:py-4 px-3 sm:px-4 cursor-pointer">
                 <div className="flex items-center gap-1">
                   Spent
                   <IconSelector size={18} />
                 </div>
               </th>
-              <th onClick={() => sortData("spendingLimit")} className="text-start py-4 px-4 cursor-pointer">
+              <th onClick={() => sortData("spendingLimit")} className="hidden lg:table-cell text-start py-3 sm:py-4 px-3 sm:px-4 cursor-pointer">
                 <div className="flex items-center gap-1">
                   Limit
                   <IconSelector size={18} />
                 </div>
               </th>
-              <th className="text-start py-4 px-4">
+              <th className="text-start py-3 sm:py-4 px-3 sm:px-4">
                 Status
               </th>
-              <th className="text-center py-4 px-4">
-                Actions
+              <th className="text-center py-3 sm:py-4 px-3 sm:px-4">
+                <span className="hidden sm:inline">Actions</span>
               </th>
             </tr>
           </thead>
@@ -885,30 +886,30 @@ const YourCards = () => {
                 className="even:bg-secondary/5 dark:even:bg-bg3 hover:bg-secondary/10 dark:hover:bg-bg3/50 transition-colors cursor-pointer"
                 onClick={() => handleCardClick(card)}
               >
-                <td className="py-4 px-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-8 bg-gradient-to-r from-primary to-primary/60 rounded flex items-center justify-center">
-                      <i className="las la-credit-card text-white text-lg"></i>
+                <td className="py-3 sm:py-4 px-3 sm:px-6">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="w-10 h-7 sm:w-12 sm:h-8 bg-gradient-to-r from-primary to-primary/60 rounded flex items-center justify-center flex-shrink-0">
+                      <i className="las la-credit-card text-white text-base sm:text-lg"></i>
                     </div>
-                    <div>
-                      <p className="font-medium">{card.maskedPan}</p>
-                      <div className="flex items-center gap-2 text-xs text-gray-500">
-                        <span>{card.nickname}</span>
-                        <span>•</span>
-                        <span>Expires {card.expiryMonth?.toString().padStart(2, '0') || '12'}/{card.expiryYear?.toString().slice(-2) || '27'}</span>
+                    <div className="min-w-0">
+                      <p className="font-medium text-sm sm:text-base truncate">{card.maskedPan}</p>
+                      <div className="flex items-center gap-1 sm:gap-2 text-xs text-gray-500">
+                        <span className="truncate max-w-[80px] sm:max-w-none">{card.nickname}</span>
+                        <span className="hidden sm:inline">•</span>
+                        <span className="hidden sm:inline">Expires {card.expiryMonth?.toString().padStart(2, '0') || '12'}/{card.expiryYear?.toString().slice(-2) || '27'}</span>
                       </div>
                     </div>
                   </div>
                 </td>
-                <td className="py-4 px-4">
-                  <p className="font-semibold text-green-600">${card.balance.toFixed(2)}</p>
-                  <p className="text-xs text-gray-500">Available</p>
+                <td className="py-3 sm:py-4 px-3 sm:px-4">
+                  <p className="font-semibold text-green-600 text-sm sm:text-base">${card.balance.toFixed(2)}</p>
+                  <p className="text-xs text-gray-500 hidden sm:block">Available</p>
                 </td>
-                <td className="py-4 px-4">
-                  <p className="font-medium">${card.spentAmount.toFixed(2)}</p>
+                <td className="hidden sm:table-cell py-3 sm:py-4 px-3 sm:px-4">
+                  <p className="font-medium text-sm sm:text-base">${card.spentAmount.toFixed(2)}</p>
                   <p className="text-xs text-gray-500">Used</p>
                 </td>
-                <td className="py-4 px-4">
+                <td className="hidden lg:table-cell py-3 sm:py-4 px-3 sm:px-4">
                   <div className="relative">
                     {inlineLimitCardId === card.id ? (
                       <div 
@@ -1006,15 +1007,15 @@ const YourCards = () => {
                       }}
                     >
                       <div className="flex items-center gap-1">
-                        <p className="font-medium">${card.spendingLimit.toFixed(2)}</p>
+                        <p className="font-medium text-sm sm:text-base">${card.spendingLimit.toFixed(2)}</p>
                         <i className="las la-edit text-gray-400 group-hover:text-primary transition-colors opacity-0 group-hover:opacity-100"></i>
                       </div>
                       <p className="text-xs text-gray-500">Max</p>
                     </div>
                   </div>
                 </td>
-                <td className="py-4 px-4">
-                  <span className={`inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize min-w-[80px] ${
+                <td className="py-3 sm:py-4 px-3 sm:px-4">
+                  <span className={`inline-flex items-center justify-center px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-medium capitalize min-w-[60px] sm:min-w-[80px] ${
                     card.status === 'active' 
                       ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                       : card.status === 'frozen'
@@ -1030,7 +1031,7 @@ const YourCards = () => {
                     {card.status}
                   </span>
                 </td>
-                <td className="py-4 px-4">
+                <td className="py-3 sm:py-4 px-3 sm:px-4">
                   <div className="flex items-center justify-center">
                     <div className="relative">
                       <button 

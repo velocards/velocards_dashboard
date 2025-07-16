@@ -1,252 +1,213 @@
-"use client";
-import Pagination from "@/components/shared/Pagination";
-import SearchBar from "@/components/shared/SearchBar";
-import Select from "@/components/shared/Select";
-import useTable from "@/utils/useTable";
-import Link from "next/link";
-import { useState } from "react";
-import { helpArticlesData } from "@/data/helpArticlesData";
-
-const articleList = helpArticlesData;
-
-/* Original article list replaced with data from helpArticlesData.ts
-const articleList = [
+// This file contains the help articles data for the help center listing
+export const helpArticlesData = [
   {
     id: 1,
     title: "How to Create Your First Virtual Card",
     desc: "Learn the step-by-step process of creating a virtual card, selecting BINs, and setting spending limits",
     topic: "Getting Started",
+    slug: "card-creation"
   },
   {
     id: 2,
     title: "Funding Your Account with Cryptocurrency",
     desc: "Complete guide to depositing Bitcoin, Ethereum, USDT, and other cryptocurrencies into your VeloCards account",
     topic: "Crypto Deposits",
+    slug: "crypto-deposits"
   },
   {
     id: 3,
     title: "Understanding VeloCards Tier System",
     desc: "Learn about different account tiers, benefits, and how to upgrade from Unverified to Elite status",
     topic: "Account Tiers",
+    slug: "account-tiers"
   },
   {
     id: 4,
     title: "Managing Multiple Virtual Cards",
     desc: "Tips for organizing, naming, and managing multiple virtual cards for different merchants and subscriptions",
     topic: "Card Management",
+    slug: "virtual-cards"
   },
   {
     id: 5,
     title: "KYC Verification Process",
     desc: "Step-by-step guide to completing identity verification and unlocking unlimited cards and higher limits",
     topic: "Verification",
+    slug: "kyc-verification"
   },
   {
     id: 6,
     title: "Understanding Fees and Commissions",
     desc: "Detailed breakdown of deposit fees, card creation fees, monthly fees, and how tier upgrades reduce costs",
     topic: "Fees & Pricing",
+    slug: "fees-and-limits"
   },
   {
     id: 7,
     title: "Card Security Best Practices",
     desc: "Essential security tips for using virtual cards online, protecting card details, and preventing unauthorized use",
     topic: "Security",
+    slug: "security"
   },
   {
     id: 8,
     title: "Troubleshooting Failed Transactions",
     desc: "Common reasons for transaction failures and step-by-step solutions to resolve payment issues",
     topic: "Troubleshooting",
+    slug: "transactions"
   },
   {
     id: 9,
     title: "Virtual Card BIN Selection Guide",
     desc: "How to choose the right BIN for your needs, understanding issuer banks and merchant compatibility",
     topic: "Card BINs",
+    slug: "card-bins"
   },
   {
     id: 10,
     title: "API Integration Documentation",
     desc: "Technical guide for developers to integrate VeloCards API for automated card creation and management",
     topic: "API Guide",
+    slug: "api-integration"
   },
   {
     id: 11,
     title: "Using VeloCards for International Purchases",
     desc: "Guide to using virtual cards for cross-border transactions, currency conversions, and merchant restrictions",
     topic: "International",
+    slug: "virtual-cards"
   },
   {
     id: 12,
     title: "Monthly Card Renewal and Maintenance",
     desc: "Understanding monthly card fees, renewal process, and how to pause or delete cards when not in use",
     topic: "Card Renewal",
+    slug: "fees-and-limits"
   },
   {
     id: 13,
     title: "Available vs Account Balance Explained",
     desc: "Understanding the difference between your account balance and available balance for spending",
     topic: "Balance Guide",
+    slug: "account-balance"
   },
   {
     id: 14,
     title: "Reporting Suspicious Transactions",
     desc: "How to identify and report unauthorized transactions, dispute charges, and protect your account",
     topic: "Security",
+    slug: "security"
   },
   {
     id: 15,
     title: "Contacting VeloCards Support",
     desc: "Available support channels, response times, and how to get quick help for urgent issues",
     topic: "Support",
+    slug: "/support/contact"
   },
   {
     id: 16,
     title: "Card Spending Limits and Controls",
     desc: "How to set and manage spending limits, merchant restrictions, and transaction controls for your cards",
     topic: "Card Controls",
+    slug: "virtual-cards"
   },
   {
     id: 17,
     title: "Understanding Crypto Deposit Times",
     desc: "Processing times for different cryptocurrencies, confirmations required, and tracking your deposits",
     topic: "Deposits",
+    slug: "crypto-deposits"
   },
   {
     id: 18,
     title: "Virtual Card vs Physical Card Benefits",
     desc: "Advantages of virtual cards for online security, instant creation, and flexible management",
     topic: "Card Types",
+    slug: "virtual-cards"
   },
   {
     id: 19,
     title: "Maximizing Your Tier Benefits",
     desc: "How to reduce fees and unlock benefits by upgrading tiers through spending and verification",
     topic: "Account Tiers",
+    slug: "account-tiers"
   },
   {
     id: 20,
     title: "Subscription Management with Virtual Cards",
     desc: "Best practices for managing recurring subscriptions, trials, and preventing unwanted charges",
     topic: "Subscriptions",
+    slug: "virtual-cards"
   },
   {
     id: 21,
     title: "E-commerce Shopping with Virtual Cards",
     desc: "Safe online shopping practices, one-time use cards, and protecting yourself from merchant breaches",
     topic: "Online Shopping",
+    slug: "virtual-cards"
   },
   {
     id: 22,
     title: "Card Freeze and Unfreeze Features",
     desc: "How to instantly freeze cards for security, temporary pause usage, and reactivate when needed",
     topic: "Card Security",
+    slug: "security"
   },
   {
     id: 23,
     title: "Transaction History and Statements",
     desc: "Accessing, downloading, and understanding your transaction history and monthly statements",
     topic: "Transactions",
+    slug: "transactions"
   },
   {
     id: 24,
     title: "Merchant Category Restrictions",
     desc: "Understanding merchant categories, setting restrictions, and controlling where cards can be used",
     topic: "Card Controls",
+    slug: "virtual-cards"
   },
   {
     id: 25,
     title: "Two-Factor Authentication Setup",
     desc: "Securing your VeloCards account with 2FA, backup codes, and recovery options",
     topic: "Security",
+    slug: "security"
   },
   {
     id: 26,
     title: "Bulk Card Creation for Business",
     desc: "Creating multiple cards for team members, expense management, and business use cases",
     topic: "Business",
+    slug: "card-creation"
   },
   {
     id: 27,
     title: "Understanding Processing Times",
     desc: "Expected timeframes for deposits, card creation, KYC verification, and withdrawals",
     topic: "Processing",
+    slug: "crypto-deposits"
   },
   {
     id: 28,
     title: "Mobile App Features and Usage",
     desc: "Getting started with the VeloCards mobile app, key features, and mobile-specific functionality",
     topic: "Mobile App",
+    slug: "virtual-cards"
   },
   {
     id: 29,
     title: "Card Nickname and Organization Tips",
     desc: "Best practices for naming and organizing your virtual cards for easy management",
     topic: "Organization",
+    slug: "virtual-cards"
   },
   {
     id: 30,
     title: "Compliance and Legal Requirements",
     desc: "Understanding VeloCards compliance, legal terms, and your responsibilities as a user",
     topic: "Legal",
-  },
-]; */
-
-const sortOptions = ["Recent", "Name", "Topic"];
-const HelpArticles = () => {
-  const [selected, setSelected] = useState(sortOptions[0]);
-  const { search, sortData, currentPage, endIndex, nextPage, totalData, paginate, prevPage, startIndex, tableData, totalPages } = useTable(articleList, 12);
-
-  return (
-    <div className="box xl:p-8">
-      <div className="flex justify-between flex-wrap items-center gap-4 bb-dashed mb-4 pb-4 lg:mb-6 lg:pb-6">
-        <h4 className="h4">Popular Help Articles</h4>
-        <div className="flex items-center gap-4 flex-wrap grow sm:justify-end">
-          <SearchBar search={search} classes="bg-primary/5 dark:bg-bg3" />
-          <div className="flex items-center gap-3 whitespace-nowrap">
-            <span>Sort By : </span>
-            <Select setSelected={setSelected} selected={selected} items={sortOptions} btnClass="rounded-[32px] lg:py-2.5" contentClass="w-full" />
-          </div>
-        </div>
-      </div>
-      <div className="grid grid-cols-12 gap-4 xxl:gap-6 bb-dashed mb-4 pb-4 lg:mb-6 lg:pb-6">
-        {tableData.map(({ id, desc, title, topic, slug }) => (
-          <div key={id} className="col-span-12 md:col-span-6 xxl:col-span-4 box xl:p-6 bg-primary/5 dark:bg-bg3 border border-n30 dark:border-n500 group hover:border-primary/50 transition-colors">
-            <p className="font-medium mb-3 text-secondary">{topic}</p>
-            <Link 
-              href={slug.startsWith('/') ? slug : `/support/help-center/${slug}`} 
-              className="h5 mb-4 block hover:text-primary transition-colors"
-            >
-              {title}
-            </Link>
-            <p className="text-sm mb-6">{desc}</p>
-            <Link 
-              href={slug.startsWith('/') ? slug : `/support/help-center/${slug}`}
-              className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
-            >
-              <span className="font-semibold">Read More</span>
-              <span className="w-7 h-7 shrink-0 bg-n0 dark:bg-bg4 flex items-center justify-center rounded-full shadow-[0px_6px_30px_0px_rgba(0,0,0,0.08)] transition-colors">
-                <i className="las la-arrow-right text-lg"></i>
-              </span>
-            </Link>
-          </div>
-        ))}
-      </div>
-      {!tableData.length && (
-        <div className="text-center py-10">
-          <div className="text-center mx-auto max-w-[500px] max-md:flex flex-col items-center">
-            <div className="px-5 lg:px-14 xl:px-24 mb-5">
-              <i className="las text-primary la-search text-7xl"></i>
-            </div>
-            <h3 className="h3 mb-3 lg:mb-6">No matching results</h3>
-            <p>Looks like we couldn&nbsp;t find any matching results for your search terms. Try other search terms.</p>
-          </div>
-        </div>
-      )}
-      {tableData.length > 0 && <Pagination totalPages={totalPages} currentPage={currentPage} nextPage={nextPage} startIndex={startIndex} endIndex={endIndex} prevPage={prevPage} total={totalData} goToPage={(page: number) => paginate(page)} />}
-    </div>
-  );
-};
-
-export default HelpArticles;
+    slug: "/legal/terms-of-service"
+  }
+];

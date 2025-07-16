@@ -31,7 +31,7 @@ const showErrorNotification = (title: string, message: string, actionable: boole
             {actionable && (
               <div className="mt-3 flex space-x-4">
                 <a
-                  href="/support/contact-us"
+                  href="/support/contact"
                   className="text-sm font-medium text-primary hover:text-primary/80 flex items-center gap-1"
                 >
                   <PhoneCall className="h-4 w-4" />
@@ -467,7 +467,7 @@ const ActiveCards = () => {
   };
 
   return (
-    <div className="col-span-12 box">
+    <div className="col-span-12 box overflow-hidden">
       <div className="flex flex-wrap gap-4 justify-between items-center bb-dashed mb-4 pb-4 lg:mb-6 lg:pb-6">
         <p className="font-medium text-lg">Your Cards</p>
         <button 
@@ -478,7 +478,7 @@ const ActiveCards = () => {
           <span>Add New Card</span>
         </button>
       </div>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto -mx-4 sm:mx-0">
         {isLoading ? (
           <div className="flex justify-center items-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -488,38 +488,39 @@ const ActiveCards = () => {
             <p className="text-gray-500 dark:text-gray-400">No active cards found</p>
           </div>
         ) : (
-          <table className="w-full whitespace-nowrap">
+          <table className="w-full whitespace-nowrap min-w-[600px]">
             <thead>
               <tr className="bg-secondary/5 dark:bg-bg3">
-                <th onClick={() => sortData("cardNumber")} className="text-start py-4 px-6 cursor-pointer">
+                <th onClick={() => sortData("cardNumber")} className="text-start py-3 sm:py-4 px-3 sm:px-6 cursor-pointer">
                   <div className="flex items-center gap-1">
-                    Card Details
+                    <span className="hidden sm:inline">Card Details</span>
+                    <span className="sm:hidden">Card</span>
                     <IconSelector size={18} />
                   </div>
                 </th>
-                <th onClick={() => sortData("balance")} className="text-start py-4 px-4 cursor-pointer">
+                <th onClick={() => sortData("balance")} className="text-start py-3 sm:py-4 px-3 sm:px-4 cursor-pointer">
                   <div className="flex items-center gap-1">
                     Balance
-                    <IconSelector size={18} />
+                    <IconSelector size={18} className="hidden sm:inline" />
                   </div>
                 </th>
-                <th onClick={() => sortData("spent")} className="text-start py-4 px-4 cursor-pointer">
+                <th onClick={() => sortData("spent")} className="hidden md:table-cell text-start py-3 sm:py-4 px-3 sm:px-4 cursor-pointer">
                   <div className="flex items-center gap-1">
                     Spent
                     <IconSelector size={18} />
                   </div>
                 </th>
-                <th onClick={() => sortData("limit")} className="text-start py-4 px-4 cursor-pointer">
+                <th onClick={() => sortData("limit")} className="hidden lg:table-cell text-start py-3 sm:py-4 px-3 sm:px-4 cursor-pointer">
                   <div className="flex items-center gap-1">
                     Limit
                     <IconSelector size={18} />
                   </div>
                 </th>
-                <th className="text-start py-4 px-4">
+                <th className="text-start py-3 sm:py-4 px-3 sm:px-4">
                   Status
                 </th>
-                <th className="text-center py-4 px-4">
-                  Actions
+                <th className="text-center py-3 sm:py-4 px-3 sm:px-4">
+                  <span className="hidden sm:inline">Actions</span>
                 </th>
               </tr>
             </thead>
@@ -530,35 +531,35 @@ const ActiveCards = () => {
                   className="even:bg-secondary/5 dark:even:bg-bg3 hover:bg-secondary/10 dark:hover:bg-bg3/50 transition-colors cursor-pointer"
                   onClick={() => handleCardClick(card)}
                 >
-                  <td className="py-4 px-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-8 bg-gradient-to-r from-primary to-primary/60 rounded flex items-center justify-center">
-                        <i className="las la-credit-card text-white text-lg"></i>
+                  <td className="py-3 sm:py-4 px-3 sm:px-6">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="w-10 h-7 sm:w-12 sm:h-8 bg-gradient-to-r from-primary to-primary/60 rounded flex items-center justify-center flex-shrink-0">
+                        <i className="las la-credit-card text-white text-base sm:text-lg"></i>
                       </div>
-                      <div>
-                        <p className="font-medium">{card.cardNumber}</p>
-                        <div className="flex items-center gap-2 text-xs text-gray-500">
-                          <span>{card.nickname}</span>
-                          <span>•</span>
-                          <span>Expires {card.expiryDate}</span>
+                      <div className="min-w-0">
+                        <p className="font-medium text-sm sm:text-base truncate">{card.cardNumber}</p>
+                        <div className="flex items-center gap-1 sm:gap-2 text-xs text-gray-500">
+                          <span className="truncate max-w-[80px] sm:max-w-none">{card.nickname}</span>
+                          <span className="hidden sm:inline">•</span>
+                          <span className="hidden sm:inline">Expires {card.expiryDate}</span>
                         </div>
                       </div>
                     </div>
                   </td>
-                  <td className="py-4 px-4">
-                    <p className="font-semibold text-green-600">${card.balance.toFixed(2)}</p>
-                    <p className="text-xs text-gray-500">Available</p>
+                  <td className="py-3 sm:py-4 px-3 sm:px-4">
+                    <p className="font-semibold text-green-600 text-sm sm:text-base">${card.balance.toFixed(2)}</p>
+                    <p className="text-xs text-gray-500 hidden sm:block">Available</p>
                   </td>
-                  <td className="py-4 px-4">
-                    <p className="font-medium">${card.spent.toFixed(2)}</p>
+                  <td className="hidden md:table-cell py-3 sm:py-4 px-3 sm:px-4">
+                    <p className="font-medium text-sm sm:text-base">${card.spent.toFixed(2)}</p>
                     <p className="text-xs text-gray-500">Used</p>
                   </td>
-                  <td className="py-4 px-4">
-                    <p className="font-medium">${card.limit.toFixed(2)}</p>
+                  <td className="hidden lg:table-cell py-3 sm:py-4 px-3 sm:px-4">
+                    <p className="font-medium text-sm sm:text-base">${card.limit.toFixed(2)}</p>
                     <p className="text-xs text-gray-500">Max</p>
                   </td>
-                  <td className="py-4 px-4">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  <td className="py-3 sm:py-4 px-3 sm:px-4">
+                    <span className={`inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-medium ${
                       card.status === 'active' 
                         ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                         : card.status === 'frozen'
@@ -568,7 +569,7 @@ const ActiveCards = () => {
                       {card.status === 'active' ? 'Active' : card.status === 'frozen' ? 'Frozen' : card.status}
                     </span>
                   </td>
-                  <td className="py-4 px-4">
+                  <td className="py-3 sm:py-4 px-3 sm:px-4">
                     <div className="flex items-center justify-center">
                       <div className="relative">
                         <button 

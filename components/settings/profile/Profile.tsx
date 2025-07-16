@@ -102,7 +102,8 @@ const Profile = () => {
   return (
     <div className="grid grid-cols-12 gap-4 xxxxxl:gap-6">
       <div className="col-span-12 lg:col-span-6">
-        <div className="box xxl:p-8 xxxl:p-10">
+        {/* Account Settings */}
+        <div className="box xxl:p-8 xxxl:p-10 mb-4 xxxxxl:mb-6">
           <h4 className="h4 bb-dashed mb-4 pb-4 md:mb-6 md:pb-6">Account Settings</h4>
           
           {/* KYC Verification Notice */}
@@ -287,10 +288,9 @@ const Profile = () => {
             </div>
           </form>
         </div>
-      </div>
-      <div className="col-span-12 lg:col-span-6">
+        
         {/* Address */}
-        <div className="box xxl:p-8 xxxl:p-10 mb-6">
+        <div className="box xxl:p-8 xxxl:p-10">
           <h4 className="h4 bb-dashed mb-4 pb-4 md:mb-6 md:pb-6">Address</h4>
           
           {isKycVerified && (
@@ -381,12 +381,15 @@ const Profile = () => {
             </div>
           </form>
         </div>
-        
+      </div>
+      <div className="col-span-12 lg:col-span-6">
         {/* Change Password Section */}
         <ChangePassword />
         
         {/* Linked Providers Section */}
-        <LinkedProviders />
+        <div className="mt-4 xxxxxl:mt-6">
+          <LinkedProviders />
+        </div>
       </div>
     </div>
   );

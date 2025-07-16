@@ -36,6 +36,7 @@ export const sidebarData = [
         name: "Settings",
         icon: <i className="las la-cog"></i>,
         submenus: [
+          { title: "Account", url: "/settings/account/" },
           { title: "Profile", url: "/settings/profile/" },
         ],
       },
@@ -45,7 +46,7 @@ export const sidebarData = [
         icon: <i className="las la-headset"></i>,
         submenus: [
           { title: "Help Center", url: "/support/help-center/" },
-          { title: "Contact Us", url: "/support/contact-us/" },
+          { title: "Contact Support", url: "/support/contact/" },
         ],
       },
     ],
