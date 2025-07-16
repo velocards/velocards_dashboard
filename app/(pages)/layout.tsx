@@ -60,7 +60,6 @@ export default function TestLayout({ children }: { children: ReactNode }) {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="colored"
       />
       <NotificationModal />
     </>

@@ -1,0 +1,179 @@
+// VeloCards Custom Toast Styles
+.Toastify__toast-container {
+  z-index: 9999 !important;
+}
+
+.Toastify__toast {
+  font-family: inherit !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  background-color: #ffffff !important;
+  color: #374151 !important;
+  padding: 1rem !important;
+  min-height: 64px;
+  
+  .dark & {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    background-color: #1f2937 !important;
+    color: #f3f4f6 !important;
+  }
+}
+
+.Toastify__toast-body {
+  padding: 0 !important;
+}
+
+.Toastify__toast--success {
+  background: linear-gradient(to right, #f0fdf4, #d1fae5) !important;
+  border-color: #86efac !important;
+  
+  .dark & {
+    background: linear-gradient(to right, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.1)) !important;
+    border-color: #22c55e !important;
+  }
+  
+  .Toastify__toast-icon {
+    color: #16a34a !important;
+    
+    .dark & {
+      color: #4ade80 !important;
+    }
+  }
+}
+
+.Toastify__toast--error {
+  background: linear-gradient(to right, #fef2f2, #fee2e2) !important;
+  border-color: #fca5a5 !important;
+  
+  .dark & {
+    background: linear-gradient(to right, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1)) !important;
+    border-color: #dc2626 !important;
+  }
+  
+  .Toastify__toast-icon {
+    color: #dc2626 !important;
+    
+    .dark & {
+      color: #f87171 !important;
+    }
+  }
+}
+
+.Toastify__toast--warning {
+  background: linear-gradient(to right, #fffbeb, #fef3c7) !important;
+  border-color: #fde68a !important;
+  
+  .dark & {
+    background: linear-gradient(to right, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1)) !important;
+    border-color: #f59e0b !important;
+  }
+  
+  .Toastify__toast-icon {
+    color: #d97706 !important;
+    
+    .dark & {
+      color: #fbbf24 !important;
+    }
+  }
+}
+
+.Toastify__toast--info {
+  background: linear-gradient(to right, #eff6ff, #dbeafe) !important;
+  border-color: #93c5fd !important;
+  
+  .dark & {
+    background: linear-gradient(to right, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.1)) !important;
+    border-color: #3b82f6 !important;
+  }
+  
+  .Toastify__toast-icon {
+    color: #2563eb !important;
+    
+    .dark & {
+      color: #60a5fa !important;
+    }
+  }
+}
+
+.Toastify__toast--default {
+  background: linear-gradient(to right, #f9fafb, #f3f4f6) !important;
+  border-color: #e5e7eb !important;
+  
+  .dark & {
+    background: linear-gradient(to right, rgba(107, 114, 128, 0.1), rgba(100, 116, 139, 0.1)) !important;
+    border-color: #6b7280 !important;
+  }
+}
+
+.Toastify__progress-bar {
+  height: 0.25rem !important;
+}
+
+.Toastify__progress-bar--success {
+  background: linear-gradient(to right, #10b981, #059669) !important;
+}
+
+.Toastify__progress-bar--error {
+  background: linear-gradient(to right, #ef4444, #dc2626) !important;
+}
+
+.Toastify__progress-bar--warning {
+  background: linear-gradient(to right, #f59e0b, #d97706) !important;
+}
+
+.Toastify__progress-bar--info {
+  background: linear-gradient(to right, #3b82f6, #2563eb) !important;
+}
+
+.Toastify__progress-bar--default {
+  background: linear-gradient(to right, #6b7280, #4b5563) !important;
+}
+
+.Toastify__close-button {
+  color: #6b7280 !important;
+  opacity: 0.5 !important;
+  
+  &:hover {
+    color: #374151 !important;
+    opacity: 1 !important;
+  }
+  
+  .dark & {
+    color: #9ca3af !important;
+    
+    &:hover {
+      color: #f3f4f6 !important;
+    }
+  }
+}
+
+// Animation
+.Toastify__toast {
+  animation: toastSlideIn 0.3s ease-out;
+}
+
+@keyframes toastSlideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+// Mobile responsive
+@media (max-width: 640px) {
+  .Toastify__toast-container {
+    left: 0 !important;
+    right: 0 !important;
+    padding: 0.5rem !important;
+  }
+  
+  .Toastify__toast {
+    margin: 0 auto 0.5rem !important;
+    border-radius: 0.5rem !important;
+  }
+}
