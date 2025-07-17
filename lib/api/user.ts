@@ -1,5 +1,5 @@
 import { apiClient } from './secureClient';
-import { UserStatistics, SpendingStatistics } from '@/types/statistics';
+import { UserStatistics } from '@/types/statistics';
 
 // Types
 export interface UserProfile {
@@ -159,8 +159,25 @@ export const userApi = {
     firstName?: string;
     lastName?: string;
     phone?: string;
+    address?: {
+      street?: string;
+      city?: string;
+      state?: string;
+      country?: string;
+      postalCode?: string;
+    };
+    dateOfBirth?: string;
   }): Promise<{ data: UserProfile }> => {
-    const response = await apiClient.patch('/users/profile', data);
+    // Transform phone to phoneNumber as expected by backend
+    const payload: any = {};
+    
+    if (data.firstName) payload.firstName = data.firstName;
+    if (data.lastName) payload.lastName = data.lastName;
+    if (data.phone) payload.phoneNumber = data.phone;
+    if (data.address) payload.address = data.address;
+    if (data.dateOfBirth) payload.dateOfBirth = data.dateOfBirth;
+    
+    const response = await apiClient.put('/users/profile', payload);
     return response.data;
   },
 
@@ -176,15 +193,7 @@ export const userApi = {
     return response.data;
   },
 
-  // Get user spending stats
-  getSpendingStats: async (period: 'daily' | 'weekly' | 'monthly' | 'yearly'): Promise<{ 
-    data: SpendingStatistics
-  }> => {
-    const response = await apiClient.get(`/users/spending-stats?period=${period}`);
-    return response.data;
-  },
-
-  // Get comprehensive user statistics (NEW)
+  // Get comprehensive user statistics
   getUserStatistics: async (): Promise<{ data: UserStatistics }> => {
     const response = await apiClient.get('/users/statistics');
     return response.data;

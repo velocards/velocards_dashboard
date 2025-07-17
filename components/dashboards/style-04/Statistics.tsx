@@ -24,39 +24,13 @@ const Statistics = () => {
     profile, 
     balance, 
     userStatistics,
-    spendingStats,
     fetchProfile, 
     fetchBalance,
-    fetchUserStatistics,
-    fetchSpendingStats
+    fetchUserStatistics
   } = useUserStore();
   const { cards, fetchCards } = useCardStore();
   
-  // State for monthly spending data
-  const [monthlySpendingData, setMonthlySpendingData] = useState([
-    { month: 'Jan', amount: 0 },
-    { month: 'Feb', amount: 0 },
-    { month: 'Mar', amount: 0 },
-    { month: 'Apr', amount: 0 },
-    { month: 'May', amount: 0 },
-    { month: 'Jun', amount: 0 },
-    { month: 'Jul', amount: 0 },
-    { month: 'Aug', amount: 0 },
-    { month: 'Sep', amount: 0 },
-    { month: 'Oct', amount: 0 },
-    { month: 'Nov', amount: 0 },
-    { month: 'Dec', amount: 0 }
-  ]);
   
-  // Fetch spending data using the spending stats API
-  const fetchMonthlySpendingData = async () => {
-    try {
-      // Fetch yearly spending stats which should have monthly breakdown
-      await fetchSpendingStats('yearly');
-    } catch (error) {
-      console.error('Failed to fetch spending stats:', error);
-    }
-  };
 
   // Fetch data on component mount
   useEffect(() => {
@@ -64,7 +38,6 @@ const Statistics = () => {
     fetchBalance();
     fetchCards();
     fetchUserStatistics(); // Fetch comprehensive user statistics
-    fetchMonthlySpendingData();
   }, []);
   
   // Calculate total card balance from active cards

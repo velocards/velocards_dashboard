@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { userApi, UserProfile, UserBalance, UserSettings, AvailableBalance, UpcomingRenewal, MonthlyFeeBreakdown } from '@/lib/api/user';
-import { UserStatistics, SpendingStatistics } from '@/types/statistics';
+import { UserStatistics } from '@/types/statistics';
 import { getErrorMessage } from '@/lib/api/secureClient';
 
 interface UserState {
@@ -12,7 +12,6 @@ interface UserState {
   monthlyFeeBreakdown: MonthlyFeeBreakdown | null;
   settings: UserSettings | null;
   userStatistics: UserStatistics | null;
-  spendingStats: SpendingStatistics | null;
   
   // Loading states
   isLoadingProfile: boolean;
@@ -21,7 +20,6 @@ interface UserState {
   isLoadingSettings: boolean;
   isLoadingRenewal: boolean;
   isLoadingStatistics: boolean;
-  isLoadingSpendingStats: boolean;
   
   // Error states
   profileError: string | null;
@@ -38,8 +36,19 @@ interface UserState {
   fetchMonthlyFeeBreakdown: () => Promise<void>;
   fetchSettings: () => Promise<void>;
   fetchUserStatistics: () => Promise<void>;
-  fetchSpendingStats: (period: 'daily' | 'weekly' | 'monthly' | 'yearly') => Promise<void>;
-  updateProfile: (data: { firstName?: string; lastName?: string; phone?: string }) => Promise<void>;
+  updateProfile: (data: { 
+    firstName?: string; 
+    lastName?: string; 
+    phone?: string;
+    address?: {
+      street?: string;
+      city?: string;
+      state?: string;
+      country?: string;
+      postalCode?: string;
+    };
+    dateOfBirth?: string;
+  }) => Promise<void>;
   updateSettings: (data: Partial<UserSettings>) => Promise<void>;
   refreshAll: () => Promise<void>;
   clearErrors: () => void;
@@ -54,7 +63,6 @@ export const useUserStore = create<UserState>((set, get) => ({
   monthlyFeeBreakdown: null,
   settings: null,
   userStatistics: null,
-  spendingStats: null,
   
   isLoadingProfile: false,
   isLoadingBalance: false,
@@ -62,7 +70,6 @@ export const useUserStore = create<UserState>((set, get) => ({
   isLoadingSettings: false,
   isLoadingRenewal: false,
   isLoadingStatistics: false,
-  isLoadingSpendingStats: false,
   
   profileError: null,
   balanceError: null,
@@ -121,7 +128,6 @@ export const useUserStore = create<UserState>((set, get) => ({
         isLoadingAvailableBalance: false 
       });
     } catch (error) {
-      const errorMessage = getErrorMessage(error);
       set({ 
         isLoadingAvailableBalance: false 
       });
@@ -158,7 +164,6 @@ export const useUserStore = create<UserState>((set, get) => ({
         isLoadingRenewal: false 
       });
     } catch (error) {
-      const errorMessage = getErrorMessage(error);
       set({ 
         isLoadingRenewal: false 
       });
@@ -250,25 +255,6 @@ export const useUserStore = create<UserState>((set, get) => ({
       set({ 
         statisticsError: errorMessage,
         isLoadingStatistics: false 
-      });
-    }
-  },
-  
-  // Fetch spending statistics
-  fetchSpendingStats: async (period: 'daily' | 'weekly' | 'monthly' | 'yearly') => {
-    set({ isLoadingSpendingStats: true, statisticsError: null });
-    
-    try {
-      const { data } = await userApi.getSpendingStats(period);
-      set({ 
-        spendingStats: data, 
-        isLoadingSpendingStats: false 
-      });
-    } catch (error) {
-      const errorMessage = getErrorMessage(error);
-      set({ 
-        statisticsError: errorMessage,
-        isLoadingSpendingStats: false 
       });
     }
   },

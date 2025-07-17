@@ -1,20 +1,26 @@
 "use client";
 import CheckboxCustom from "@/components/shared/Checkbox";
-import Select from "@/components/shared/Select";
-import Image from "next/image";
-import { useState, useEffect } from "react";
+import SearchableSelect from "@/components/shared/SearchableSelect";
+import { useState, useEffect, useMemo } from "react";
 import { useAuthStore } from "@/stores/authStore";
+import { useUserStore } from "@/stores/userStore";
 import { toast } from "react-toastify";
 import { IconLock, IconInfoCircle } from "@tabler/icons-react";
 import ChangePassword from "@/components/settings/security/ChangePassword";
 import LinkedProviders from "@/components/settings/profile/LinkedProviders";
-
-const contries = ["Select Country", "USA", "UK", "SA"];
+import { getNames } from 'country-list';
 
 const Profile = () => {
   const { user } = useAuthStore();
-  const [selected, setSelected] = useState(contries[0]);
+  const { updateProfile, fetchProfile } = useUserStore();
+  
+  // Get country list and add "Select Country" as first option
+  const countries = useMemo(() => {
+    const countryNames = getNames();
+    return ["Select Country", ...countryNames.sort()];
+  }, []);
   const [isLoading, setIsLoading] = useState(false);
+  const [isAddressLoading, setIsAddressLoading] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [hasAddressChanges, setHasAddressChanges] = useState(false);
 
@@ -27,6 +33,15 @@ const Profile = () => {
     gender: "male",
   });
   
+  // Address form data state
+  const [addressData, setAddressData] = useState({
+    street: "",
+    city: "",
+    state: "",
+    country: "Select Country",
+    postalCode: ""
+  });
+  
   // Original form data to track changes
   const [originalFormData, setOriginalFormData] = useState({
     firstName: "",
@@ -34,6 +49,15 @@ const Profile = () => {
     email: "",
     phone: "",
     gender: "male",
+  });
+  
+  // Original address data to track changes
+  const [originalAddressData, setOriginalAddressData] = useState({
+    street: "",
+    city: "",
+    state: "",
+    country: "Select Country",
+    postalCode: ""
   });
 
   // Check if user is KYC verified
@@ -80,14 +104,21 @@ const Profile = () => {
     setIsLoading(true);
     
     try {
-      // TODO: Implement API call to update profile
-      // await userApi.updateProfile(formData);
+      // Call the API to update profile
+      await updateProfile({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phone: formData.phone
+      });
+      
+      // Refresh the profile data
+      await fetchProfile();
       
       toast.success("Profile updated successfully!");
       setOriginalFormData(formData); // Update original data after save
       setHasChanges(false);
-    } catch (error) {
-      toast.error("Failed to update profile");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update profile");
     } finally {
       setIsLoading(false);
     }
@@ -97,6 +128,71 @@ const Profile = () => {
     // Reset form to original data
     setFormData(originalFormData);
     setHasChanges(false);
+  };
+
+  // Handle address input changes
+  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement> | { target: { name: string; value: string } }) => {
+    const { name, value } = e.target;
+    const newAddressData = {
+      ...addressData,
+      [name]: value
+    };
+    setAddressData(newAddressData);
+    
+    // Check if address has changes
+    const hasAnyChange = Object.keys(newAddressData).some(
+      key => newAddressData[key as keyof typeof newAddressData] !== originalAddressData[key as keyof typeof originalAddressData]
+    );
+    setHasAddressChanges(hasAnyChange);
+  };
+
+  // Handle address form submission
+  const handleAddressSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (isKycVerified) {
+      toast("Address details cannot be changed after KYC verification");
+      return;
+    }
+
+    // Don't submit if country is not selected
+    if (addressData.country === "Select Country") {
+      toast.error("Please select a country");
+      return;
+    }
+
+    setIsAddressLoading(true);
+    
+    try {
+      // Call the API to update address
+      await updateProfile({
+        address: {
+          street: addressData.street,
+          city: addressData.city,
+          state: addressData.state,
+          country: addressData.country,
+          postalCode: addressData.postalCode
+        }
+      });
+      
+      // Refresh the profile data
+      await fetchProfile();
+      
+      toast.success("Address updated successfully!");
+      setOriginalAddressData(addressData); // Update original data after save
+      setHasAddressChanges(false);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update address");
+    } finally {
+      setIsAddressLoading(false);
+    }
+  };
+
+  // Handle address cancel
+  const handleAddressCancel = () => {
+    // Reset address to original data
+    setAddressData(originalAddressData);
+    setHasAddressChanges(false);
   };
 
   return (
@@ -122,18 +218,7 @@ const Profile = () => {
             </div>
           )}
 
-          <p className="text-lg font-medium mb-4">Profile Photo</p>
-          <div className="flex flex-wrap gap-6 xxl:gap-10 items-center bb-dashed mb-6 pb-6">
-            <Image src="/images/placeholder.png" width={120} height={120} className="rounded-xl" alt="img" />
-            <div className="flex gap-4">
-              <label htmlFor="photo-upload" className="btn-primary">
-                Upload Photo
-              </label>
-              <input type="file" id="photo-upload" className="hidden" />
-            </div>
-          </div>
-          
-          <form onSubmit={handleSaveChanges} className="mt-6 xl:mt-8 grid grid-cols-2 gap-4 xxxxxl:gap-6">
+          <form onSubmit={handleSaveChanges} className="grid grid-cols-2 gap-4 xxxxxl:gap-6">
             <div className="col-span-2 md:col-span-1">
               <label htmlFor="firstName" className="md:text-lg font-medium block mb-4">
                 First Name
@@ -302,24 +387,10 @@ const Profile = () => {
             </div>
           )}
 
-          <form className="mt-6 xl:mt-8 grid grid-cols-2 gap-4 xxxl:gap-6">
+          <form onSubmit={handleAddressSubmit} className="mt-6 xl:mt-8 grid grid-cols-2 gap-4 xxxl:gap-6">
             <div className="col-span-2">
-              <label htmlFor="location" className="md:text-lg font-medium block mb-4">
-                Location
-              </label>
-              <Select 
-                items={contries} 
-                setSelected={setSelected} 
-                selected={selected} 
-                btnClass={`md:py-3 w-full py-2.5 rounded-[32px] md:px-5 ${
-                  isKycVerified ? 'opacity-75 cursor-not-allowed' : ''
-                }`} 
-                contentClass="w-full"
-              />
-            </div>
-            <div className="col-span-2 md:col-span-1">
-              <label htmlFor="address1" className="md:text-lg font-medium block mb-4">
-                Address 1
+              <label htmlFor="street" className="md:text-lg font-medium block mb-4">
+                Street Address
               </label>
               <input 
                 type="text" 
@@ -328,16 +399,18 @@ const Profile = () => {
                     ? 'bg-n20 dark:bg-n800 cursor-not-allowed opacity-75' 
                     : 'bg-primary/5 dark:bg-bg3'
                 }`}
-                placeholder="Enter Address 1" 
-                defaultValue="Road 12, House 3, New York" 
-                id="address1" 
+                placeholder="Enter street address" 
+                value={addressData.street}
+                onChange={handleAddressChange}
+                name="street"
+                id="street" 
                 disabled={isKycVerified}
                 required 
               />
             </div>
             <div className="col-span-2 md:col-span-1">
-              <label htmlFor="address2" className="md:text-lg font-medium block mb-4">
-                Address 2 (Optional)
+              <label htmlFor="city" className="md:text-lg font-medium block mb-4">
+                City
               </label>
               <input 
                 type="text" 
@@ -346,15 +419,56 @@ const Profile = () => {
                     ? 'bg-n20 dark:bg-n800 cursor-not-allowed opacity-75' 
                     : 'bg-primary/5 dark:bg-bg3'
                 }`}
-                placeholder="Enter Address 2" 
-                defaultValue="Road 12, House 3, Los angelos" 
-                id="address2" 
+                placeholder="Enter city" 
+                value={addressData.city}
+                onChange={handleAddressChange}
+                name="city"
+                id="city" 
+                disabled={isKycVerified}
+                required 
+              />
+            </div>
+            <div className="col-span-2 md:col-span-1">
+              <label htmlFor="state" className="md:text-lg font-medium block mb-4">
+                State/Province
+              </label>
+              <input 
+                type="text" 
+                className={`w-full text-sm border border-n30 dark:border-n500 rounded-3xl px-3 md:px-6 py-2 md:py-3 ${
+                  isKycVerified 
+                    ? 'bg-n20 dark:bg-n800 cursor-not-allowed opacity-75' 
+                    : 'bg-primary/5 dark:bg-bg3'
+                }`}
+                placeholder="Enter state or province" 
+                value={addressData.state}
+                onChange={handleAddressChange}
+                name="state"
+                id="state" 
+                disabled={isKycVerified}
+                required 
+              />
+            </div>
+            <div className="col-span-2 md:col-span-1">
+              <label htmlFor="country" className="md:text-lg font-medium block mb-4">
+                Country
+              </label>
+              <SearchableSelect 
+                items={countries} 
+                setSelected={(value) => {
+                  handleAddressChange({ target: { name: 'country', value } });
+                }} 
+                selected={addressData.country} 
+                btnClass={`md:py-3 w-full py-2.5 rounded-[32px] md:px-5 ${
+                  isKycVerified ? 'opacity-75 cursor-not-allowed' : ''
+                }`} 
+                contentClass="w-full"
+                placeholder="Search countries..."
                 disabled={isKycVerified}
               />
             </div>
-            <div className="col-span-2">
-              <label htmlFor="zip" className="md:text-lg font-medium block mb-4">
-                Zip Code
+            <div className="col-span-2 md:col-span-1">
+              <label htmlFor="postalCode" className="md:text-lg font-medium block mb-4">
+                Postal/Zip Code
               </label>
               <input 
                 type="text" 
@@ -363,21 +477,33 @@ const Profile = () => {
                     ? 'bg-n20 dark:bg-n800 cursor-not-allowed opacity-75' 
                     : 'bg-primary/5 dark:bg-bg3'
                 }`}
-                placeholder="Enter Zip Code" 
-                defaultValue="2250" 
-                id="zip" 
+                placeholder="Enter postal code" 
+                value={addressData.postalCode}
+                onChange={handleAddressChange}
+                name="postalCode"
+                id="postalCode" 
                 disabled={isKycVerified}
                 required 
               />
             </div>
             <div className="col-span-2 flex pt-4 gap-4">
               <button 
-                className="btn-primary px-5 disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={isKycVerified}
                 type="submit"
+                className="btn-primary px-5 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isAddressLoading || isKycVerified || !hasAddressChanges}
               >
-                Save Changes
+                {isAddressLoading ? "Saving..." : "Save Address"}
               </button>
+              {hasAddressChanges && (
+                <button 
+                  type="button"
+                  onClick={handleAddressCancel}
+                  className="btn-outline px-5"
+                  disabled={isAddressLoading}
+                >
+                  Cancel
+                </button>
+              )}
             </div>
           </form>
         </div>
