@@ -255,4 +255,34 @@ export const userApi = {
     const response = await apiClient.get('/tiers/fees');
     return response.data;
   },
+
+  // Get all tiers information (public endpoint)
+  getAllTiers: async (): Promise<{ 
+    data: Array<{
+      id: string;
+      tier_level: number;
+      name: string;
+      display_name: string;
+      description: string;
+      kyc_required: boolean;
+      yearly_spending_threshold: number;
+      max_cards: number | null;
+      card_creation_fee: number;
+      card_monthly_fee: number;
+      daily_spending_limit: number | null;
+      monthly_spending_limit: number | null;
+      yearly_spending_limit: number | null;
+      deposit_fee_percentage: number;
+      withdrawal_fee_percentage: number;
+      features: {
+        cashback?: number;
+        support_level?: string;
+        concierge_service?: boolean;
+        [key: string]: any;
+      };
+    }>
+  }> => {
+    const response = await apiClient.get('/tiers');
+    return response.data;
+  },
 };

@@ -25,12 +25,14 @@ const TierStatus = () => {
     monthlyFeesOwed: number;
     totalFeesThisMonth: number;
   } | null>(null);
+  const [allTiers, setAllTiers] = useState<Array<any>>([]);
   const [isLoadingTier, setIsLoadingTier] = useState(true);
 
   useEffect(() => {
     fetchProfile();
     fetchTierInfo();
     fetchTierFees();
+    fetchAllTiers();
   }, [fetchProfile]);
 
   const fetchTierInfo = async () => {
@@ -55,9 +57,35 @@ const TierStatus = () => {
     }
   };
 
+  const fetchAllTiers = async () => {
+    try {
+      const response = await userApi.getAllTiers();
+      setAllTiers(response.data);
+    } catch (error) {
+      console.error('Failed to fetch all tiers:', error);
+    }
+  };
+
   // Get current tier from profile or tierInfo
   const currentTier = tierInfo?.current || profile?.tier;
-  const nextTier = tierInfo?.nextTier;
+  let nextTier = tierInfo?.nextTier;
+  
+  // For unverified users, manually set the next tier as Verified (tier 1)
+  if (currentTier?.level === 0 && !nextTier && allTiers.length > 0) {
+    const verifiedTier = allTiers.find(t => t.tier_level === 1);
+    if (verifiedTier) {
+      nextTier = {
+        level: verifiedTier.tier_level,
+        name: verifiedTier.name,
+        displayName: verifiedTier.display_name,
+        description: verifiedTier.description
+      };
+    }
+  }
+  
+  // Get full tier data from allTiers if available
+  const currentTierData = allTiers.find(t => t.tier_level === currentTier?.level) || currentTier;
+  const nextTierData = allTiers.find(t => t.tier_level === nextTier?.level) || nextTier;
   
   // Map tier colors based on level
   const getTierColor = (level: number) => {
@@ -72,12 +100,12 @@ const TierStatus = () => {
 
   // Calculate requirements status
   const getRequirements = () => {
-    if (!nextTier) return [];
+    if (!nextTierData) return [];
     
     const requirements = [];
     
-    // Email verification requirement
-    if (nextTier.level === 1) {
+    // KYC requirement
+    if (nextTierData.kyc_required) {
       requirements.push({
         text: "Verify email address",
         completed: user?.emailVerified || false
@@ -89,24 +117,12 @@ const TierStatus = () => {
     }
     
     // Spending requirements
-    if (nextTier.minSpending > 0) {
-      const monthlySpending = profile?.monthlySpending || 0;
+    if (nextTierData.yearly_spending_threshold > 0) {
+      const yearlySpending = profile?.yearlySpending || 0;
       requirements.push({
-        text: `Spend $${nextTier.minSpending.toLocaleString()}+ monthly`,
-        completed: monthlySpending >= nextTier.minSpending
-      });
-    }
-    
-    // Account age requirements (this would need to come from API)
-    if (nextTier.level === 2) {
-      requirements.push({
-        text: "Maintain account for 30 days",
-        completed: false // This should come from API
-      });
-    } else if (nextTier.level === 3) {
-      requirements.push({
-        text: "Maintain account for 90 days",
-        completed: false // This should come from API
+        text: `Reach $${nextTierData.yearly_spending_threshold.toLocaleString()} yearly spending`,
+        completed: yearlySpending >= nextTierData.yearly_spending_threshold,
+        progress: `$${yearlySpending.toLocaleString()} / $${nextTierData.yearly_spending_threshold.toLocaleString()}`
       });
     }
     
@@ -117,85 +133,45 @@ const TierStatus = () => {
   const requirements = getRequirements();
   const completedRequirements = requirements.filter(r => r.completed).length;
 
-  // Get default tier data based on level
-  const getDefaultTierData = (level: number) => {
-    switch (level) {
-      case 0:
-        return {
-          benefits: [
-            "1 active card maximum",
-            "Basic features",
-            "$500 monthly limit",
-            "3% deposit fee"
-          ],
-          cardLimits: {
-            maxActiveCards: 1,
-            maxTotalBalance: 500
-          },
-          fees: {
-            cardCreationFee: 5,
-            transactionFee: 3
-          }
-        };
-      case 1:
-        return {
-          benefits: [
-            "Unlimited active cards",
-            "Priority support",
-            "$10,000 monthly limit",
-            "2.5% deposit fee"
-          ],
-          cardLimits: {
-            maxActiveCards: null,
-            maxTotalBalance: 10000
-          },
-          fees: {
-            cardCreationFee: 3,
-            transactionFee: 2.5
-          }
-        };
-      case 2:
-        return {
-          benefits: [
-            "All Verified benefits",
-            "Reduced card creation fees",
-            "$50,000 monthly limit",
-            "2% deposit fee"
-          ],
-          cardLimits: {
-            maxActiveCards: null,
-            maxTotalBalance: 50000
-          },
-          fees: {
-            cardCreationFee: 2,
-            transactionFee: 2
-          }
-        };
-      case 3:
-        return {
-          benefits: [
-            "All Premium benefits",
-            "Lowest fees",
-            "Unlimited monthly limit",
-            "1.5% deposit fee",
-            "Dedicated account manager"
-          ],
-          cardLimits: {
-            maxActiveCards: null,
-            maxTotalBalance: null
-          },
-          fees: {
-            cardCreationFee: 1,
-            transactionFee: 1.5
-          }
-        };
-      default:
-        return {
-          benefits: [],
-          cardLimits: {},
-          fees: {}
-        };
+  // Generate benefits from tier data
+  const getTierBenefits = (tierData: any) => {
+    if (!tierData) return [];
+    
+    const benefits = [];
+    
+    // Add card limit benefit
+    if (tierData.max_cards === null) {
+      benefits.push("Unlimited active cards");
+    } else if (tierData.max_cards === 1) {
+      benefits.push("1 active card maximum");
+    } else {
+      benefits.push(`Up to ${tierData.max_cards} active cards`);
     }
+    
+    // Add spending limit benefits based on tier level
+    if (tierData.tier_level === 0) {
+      benefits.push("$500 daily spending limit");
+    } else {
+      benefits.push("No spending limits");
+    }
+    
+    // Add fee benefits
+    benefits.push(`${tierData.deposit_fee_percentage}% deposit fee`);
+    
+    // Add feature-based benefits
+    if (tierData.features?.cashback) {
+      benefits.push(`${tierData.features.cashback}% cashback on all purchases`);
+    }
+    
+    if (tierData.features?.support_level) {
+      benefits.push(`${tierData.features.support_level} support`);
+    }
+    
+    if (tierData.features?.concierge_service) {
+      benefits.push("Dedicated concierge service");
+    }
+    
+    return benefits;
   };
 
   if (isLoadingTier || !currentTier) {
@@ -220,18 +196,19 @@ const TierStatus = () => {
     );
   }
 
-  // Merge API data with defaults
-  const defaultData = getDefaultTierData(currentTier.level || 0);
-  const tierBenefits = currentTier.benefits?.length > 0 ? currentTier.benefits : defaultData.benefits;
-  const tierCardLimits = currentTier.cardLimits || defaultData.cardLimits;
+  // Use API data for tier information
+  const tierBenefits = getTierBenefits(currentTierData);
   
-  // Use API tier fees if available, otherwise fall back to current tier fees or defaults
+  // Use API tier fees if available, otherwise fall back to tier data
   const displayFees = tierFees?.fees ? {
     cardCreationFee: tierFees.fees.cardCreation,
     transactionFee: tierFees.fees.depositPercentage,
-    monthlyFee: tierFees.fees.cardMonthly,
-    withdrawalFee: tierFees.fees.withdrawalPercentage
-  } : currentTier.fees || defaultData.fees;
+    monthlyFee: tierFees.fees.cardMonthly
+  } : {
+    cardCreationFee: currentTierData?.card_creation_fee || 0,
+    transactionFee: currentTierData?.deposit_fee_percentage || 0,
+    monthlyFee: currentTierData?.card_monthly_fee || 0
+  };
 
   return (
     <div className="box p-6">
@@ -258,7 +235,7 @@ const TierStatus = () => {
           : 'bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
       }`}>
         <div className="flex items-center justify-between mb-3">
-          <h4 className="text-xl font-bold">{currentTier.displayName || currentTier.name}</h4>
+          <h4 className="text-xl font-bold">{currentTierData?.display_name || currentTierData?.name || currentTier?.displayName || currentTier?.name}</h4>
           <span className={`text-2xl ${
             currentTierColor === 'blue' 
               ? 'text-blue-600 dark:text-blue-400' 
@@ -275,8 +252,8 @@ const TierStatus = () => {
           </span>
         </div>
         
-        {currentTier.description && (
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{currentTier.description}</p>
+        {(currentTierData?.description || currentTier?.description) && (
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{currentTierData?.description || currentTier?.description}</p>
         )}
         
         <div className="space-y-4">
@@ -299,16 +276,20 @@ const TierStatus = () => {
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div>
               <p className="text-gray-600 dark:text-gray-400">Active Cards</p>
-              <p className="font-medium">{tierCardLimits.maxActiveCards || 'Unlimited'}</p>
+              <p className="font-medium">{currentTierData?.max_cards || 'Unlimited'}</p>
             </div>
-            <div>
-              <p className="text-gray-600 dark:text-gray-400">Monthly Limit</p>
-              <p className="font-medium">
-                {tierCardLimits.maxTotalBalance 
-                  ? `$${tierCardLimits.maxTotalBalance.toLocaleString()}` 
-                  : 'Unlimited'}
-              </p>
-            </div>
+            {currentTier?.level === 0 && (
+              <div>
+                <p className="text-gray-600 dark:text-gray-400">Daily Spending</p>
+                <p className="font-medium">$500</p>
+              </div>
+            )}
+            {currentTier?.level > 0 && (
+              <div>
+                <p className="text-gray-600 dark:text-gray-400">Spending Limits</p>
+                <p className="font-medium text-green-600 dark:text-green-400">No limits</p>
+              </div>
+            )}
           </div>
           
           {/* Fees */}
@@ -327,12 +308,6 @@ const TierStatus = () => {
                 <p className="font-medium">
                   {displayFees.monthlyFee > 0 ? `$${displayFees.monthlyFee}` : 'No fee'}
                 </p>
-              </div>
-            )}
-            {displayFees.withdrawalFee !== undefined && (
-              <div>
-                <p className="text-gray-600 dark:text-gray-400">Withdrawal Fee</p>
-                <p className="font-medium">{displayFees.withdrawalFee}%</p>
               </div>
             )}
           </div>
@@ -358,10 +333,10 @@ const TierStatus = () => {
       </div>
 
       {/* Next Tier Progress */}
-      {nextTier && (
+      {nextTierData && (
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h5 className="font-medium">Progress to {nextTier.displayName || nextTier.name}</h5>
+            <h5 className="font-medium">Progress to {nextTierData.display_name || nextTierData.name || nextTier?.displayName || nextTier?.name}</h5>
             <span className="text-sm text-gray-600 dark:text-gray-400">
               {completedRequirements}/{requirements.length} completed
             </span>
@@ -390,35 +365,40 @@ const TierStatus = () => {
                     <IconLock className="w-3 h-3 text-gray-400" />
                   </div>
                 )}
-                <span className={`text-sm ${req.completed ? 'text-green-600 dark:text-green-400' : ''}`}>
-                  {req.text}
-                </span>
+                <div className="flex-1">
+                  <span className={`text-sm ${req.completed ? 'text-green-600 dark:text-green-400' : ''}`}>
+                    {req.text}
+                  </span>
+                  {req.progress && (
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{req.progress}</p>
+                  )}
+                </div>
               </div>
             ))}
           </div>
 
           {/* Amount to Next Tier */}
-          {tierInfo?.amountToNext > 0 && (
+          {tierInfo?.amountToNext && tierInfo.amountToNext > 0 && (
             <div className="mt-3 text-sm text-gray-600 dark:text-gray-400">
               <span className="font-medium">${tierInfo.amountToNext.toLocaleString()}</span> more in monthly spending needed
             </div>
           )}
 
           {/* Next Tier Fee Comparison */}
-          {nextTier.fees && (
+          {nextTierData && (
             <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
               <p className="text-xs font-medium text-green-700 dark:text-green-300 mb-2">
-                Save with {nextTier.displayName || nextTier.name}:
+                Save with {nextTierData.display_name || nextTierData.name}:
               </p>
               <div className="grid grid-cols-2 gap-2 text-xs">
-                {nextTier.fees.cardCreationFee < displayFees.cardCreationFee && (
+                {nextTierData.card_creation_fee < displayFees.cardCreationFee && (
                   <div className="text-green-600 dark:text-green-400">
-                    ▼ Card Creation: ${nextTier.fees.cardCreationFee}
+                    ▼ Card Creation: ${nextTierData.card_creation_fee}
                   </div>
                 )}
-                {nextTier.fees.transactionFee < displayFees.transactionFee && (
+                {nextTierData.deposit_fee_percentage < displayFees.transactionFee && (
                   <div className="text-green-600 dark:text-green-400">
-                    ▼ Deposit Fee: {nextTier.fees.transactionFee}%
+                    ▼ Deposit Fee: {nextTierData.deposit_fee_percentage}%
                   </div>
                 )}
               </div>
@@ -427,13 +407,9 @@ const TierStatus = () => {
           
           {/* Unlock Benefits */}
           <div className="mt-4 p-3 bg-primary/5 rounded-lg">
-            <p className="text-xs font-medium text-primary mb-1">Unlock with {nextTier.displayName || nextTier.name}:</p>
+            <p className="text-xs font-medium text-primary mb-1">Unlock with {nextTierData.display_name || nextTierData.name}:</p>
             <p className="text-xs text-gray-600 dark:text-gray-400">
-              {nextTier.benefits?.[0] || 
-                (nextTier.level === 1 ? "Unlimited active cards and priority support" :
-                 nextTier.level === 2 ? "Reduced fees and higher limits" :
-                 nextTier.level === 3 ? "Lowest fees and dedicated account manager" :
-                 "Enhanced features and benefits")}
+              {getTierBenefits(nextTierData)[0] || "Enhanced features and benefits"}
             </p>
           </div>
         </div>

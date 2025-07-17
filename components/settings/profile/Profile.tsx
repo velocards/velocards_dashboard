@@ -29,7 +29,6 @@ const Profile = () => {
     lastName: "",
     email: "",
     phone: "",
-    gender: "male",
   });
   
   // Address form data state
@@ -47,7 +46,6 @@ const Profile = () => {
     lastName: "",
     email: "",
     phone: "",
-    gender: "male",
   });
   
   // Original address data to track changes
@@ -79,7 +77,6 @@ const Profile = () => {
         lastName: dataSource.lastName || "",
         email: dataSource.email || "",
         phone: dataSource.phone || "",
-        gender: "male", // Default since it's not in the user object
       };
       setFormData(userData);
       setOriginalFormData(userData);
@@ -335,49 +332,6 @@ const Profile = () => {
                 onChange={handleInputChange}
                 disabled={isKycVerified}
               />
-            </div>
-            <div className="col-span-2">
-              <label htmlFor="gender" className="md:text-lg font-medium block mb-4">
-                Gender :
-              </label>
-              <div className="flex gap-5">
-                <label htmlFor="male" className="flex items-center gap-2 cursor-pointer">
-                  <input 
-                    type="radio" 
-                    id="male" 
-                    name="gender" 
-                    value="male"
-                    checked={formData.gender === "male"}
-                    onChange={handleInputChange}
-                    disabled={isKycVerified}
-                    className="accent-secondary scale-125" 
-                  /> Male
-                </label>
-                <label htmlFor="female" className="flex items-center gap-2 cursor-pointer">
-                  <input 
-                    type="radio" 
-                    id="female" 
-                    name="gender" 
-                    value="female"
-                    checked={formData.gender === "female"}
-                    onChange={handleInputChange}
-                    disabled={isKycVerified}
-                    className="accent-secondary scale-125" 
-                  /> Female
-                </label>
-                <label htmlFor="other" className="flex items-center gap-2 cursor-pointer">
-                  <input 
-                    type="radio" 
-                    id="other" 
-                    name="gender" 
-                    value="other"
-                    checked={formData.gender === "other"}
-                    onChange={handleInputChange}
-                    disabled={isKycVerified}
-                    className="accent-secondary scale-125" 
-                  /> Other
-                </label>
-              </div>
             </div>
 
             <div className="col-span-2">

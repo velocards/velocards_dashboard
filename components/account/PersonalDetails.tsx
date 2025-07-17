@@ -1,10 +1,19 @@
 "use client";
 import { useAuthStore } from "@/stores/authStore";
+import { useUserStore } from "@/stores/userStore";
 import Link from "next/link";
 import { IconUser, IconMail, IconPhone, IconMapPin, IconEdit } from "@tabler/icons-react";
+import { useEffect } from "react";
 
 const PersonalDetails = () => {
   const { user } = useAuthStore();
+  const { profile, fetchProfile } = useUserStore();
+  
+  useEffect(() => {
+    if (!profile) {
+      fetchProfile();
+    }
+  }, [profile, fetchProfile]);
 
   const InfoItem = ({ icon, label, value, isVerified = false }: { 
     icon: React.ReactNode; 
@@ -68,6 +77,16 @@ const PersonalDetails = () => {
           icon={<IconPhone className="w-5 h-5 text-primary" />}
           label="Phone Number"
           value={user?.phone}
+        />
+
+        {/* Address */}
+        <InfoItem 
+          icon={<IconMapPin className="w-5 h-5 text-primary" />}
+          label="Address"
+          value={profile?.address ? 
+            `${profile.address.street ? profile.address.street + ', ' : ''}${profile.address.city || ''}${profile.address.state ? ', ' + profile.address.state : ''}${profile.address.country ? ', ' + profile.address.country : ''}${profile.address.postalCode ? ' ' + profile.address.postalCode : ''}`.trim().replace(/,$/, '') || null
+            : null
+          }
         />
       </div>
 

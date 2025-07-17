@@ -11,6 +11,9 @@ export interface UserStatistics {
       completed: number;
       pending: number;
       failed: number;
+      reversed?: number;
+      netSpending?: number;
+      successRate?: number;
     };
     fees: {
       cardCreation: number;
@@ -29,6 +32,9 @@ export interface UserStatistics {
       completed: number;
       pending: number;
       failed: number;
+      reversed?: number;
+      netSpending?: number;
+      successRate?: number;
     };
     fees: {
       cardCreation: number;

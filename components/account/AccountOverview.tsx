@@ -2,13 +2,17 @@
 import { useAuthStore } from "@/stores/authStore";
 import { useUserStore } from "@/stores/userStore";
 import { IconShieldCheck, IconAlertCircle, IconCircleCheck, IconClock } from "@tabler/icons-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import KycModal from "@/components/kyc/KycModal";
 
 const AccountOverview = () => {
   const { user } = useAuthStore();
-  const { profile } = useUserStore();
+  const { userStatistics, fetchUserStatistics } = useUserStore();
   const [isKycModalOpen, setIsKycModalOpen] = useState(false);
+  
+  useEffect(() => {
+    fetchUserStatistics();
+  }, []);
   
   const getVerificationStatus = () => {
     if (!user) return { icon: null, text: "Unknown", color: "gray" };
@@ -102,11 +106,6 @@ const AccountOverview = () => {
             {emailStatus.icon}
             {emailStatus.text}
           </div>
-          {!user?.emailVerified && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-              Please verify your email to unlock all features
-            </p>
-          )}
         </div>
 
         {/* KYC Status */}
@@ -135,10 +134,7 @@ const AccountOverview = () => {
         <div>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Account Type</p>
           <p className="font-medium capitalize">
-            {typeof profile?.tier === 'object' 
-              ? profile?.tier?.name || 'Unverified'
-              : profile?.tier || 'Unverified'
-            }
+            {userStatistics?.accountInfo?.currentTier || 'Unverified'}
           </p>
         </div>
 
@@ -146,7 +142,7 @@ const AccountOverview = () => {
         <div>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Active Cards</p>
           <p className="font-medium">
-            {profile?.cardsCount || 0} Cards
+            {userStatistics?.accountInfo?.activeCardsCount || 0} Cards
           </p>
         </div>
       </div>
@@ -155,12 +151,6 @@ const AccountOverview = () => {
       <div className="mt-6 pt-6 border-t dark:border-gray-700">
         <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-3">Quick Actions</p>
         <div className="flex flex-wrap gap-3">
-          {!user?.emailVerified && (
-            <button className="btn-outline text-sm px-4 py-2">
-              <i className="las la-envelope mr-2"></i>
-              Verify Email
-            </button>
-          )}
           {user?.kycStatus !== 'approved' && (
             <button 
               onClick={() => setIsKycModalOpen(true)}
