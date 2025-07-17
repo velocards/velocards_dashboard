@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { toast } from 'react-toastify';
 import { authApi } from '@/lib/api/auth';
 import { IconCircleCheck, IconCircleX, IconLoader2 } from '@tabler/icons-react';
+import VerifyEmailVisual from './VerifyEmailVisual';
 
 const VerifyEmail = () => {
   const searchParams = useSearchParams();
@@ -98,8 +98,8 @@ const VerifyEmail = () => {
           )}
         </div>
       </div>
-      <div className="col-span-12 lg:col-span-5 flex justify-center items-center">
-        <Image src="/images/auth.png" alt="img" width={533} height={560} />
+      <div className="col-span-12 lg:col-span-5 hidden lg:block">
+        <VerifyEmailVisual />
       </div>
     </div>
   );
