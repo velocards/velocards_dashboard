@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { IconEye, IconEyeOff, IconCircleCheck, IconCircleX } from "@tabler/icons-react";
 import { authApi } from "@/lib/api/auth";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/stores/authStore";
 
 const changePasswordSchema = z.object({
   oldPassword: z.string().min(1, "Current password is required"),
@@ -35,6 +36,7 @@ const rules = [
 
 const ChangePassword = () => {
   const router = useRouter();
+  const { logout } = useAuthStore();
   const [showOldPass, setShowOldPass] = useState(false);
   const [showNewPass, setShowNewPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
@@ -66,12 +68,18 @@ const ChangePassword = () => {
     try {
       await authApi.changePassword(data.oldPassword, data.newPassword);
       
-      toast.success("Password changed successfully!");
-      reset(); // Clear the form
+      toast.success("Password changed successfully! Please log in again with your new password.");
+      
+      // Clear the form before logout
+      reset();
       setHasChanges(false);
       
-      // Optionally redirect to login or refresh auth
-      // router.push('/auth/sign-in');
+      // Wait a moment for the user to see the message
+      setTimeout(async () => {
+        // Logout and redirect to sign-in page
+        await logout();
+        router.push('/auth/sign-in');
+      }, 2000);
     } catch (error: any) {
       const errorMessage = error.response?.data?.error?.message || "Failed to change password";
       
