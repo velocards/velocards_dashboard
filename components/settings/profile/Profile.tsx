@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { IconLock, IconInfoCircle } from "@tabler/icons-react";
 import ChangePassword from "@/components/settings/security/ChangePassword";
 import LinkedProviders from "@/components/settings/profile/LinkedProviders";
-import { getNames } from 'country-list';
+import { getNames, getCode } from 'country-list';
 
 const Profile = () => {
   const { user } = useAuthStore();
@@ -164,13 +164,20 @@ const Profile = () => {
     setIsAddressLoading(true);
     
     try {
+      // Convert country name to ISO code
+      let countryCode = addressData.country;
+      if (addressData.country !== "Select Country") {
+        // getCode returns the 2-letter ISO code for the country name
+        countryCode = getCode(addressData.country) || addressData.country;
+      }
+      
       // Call the API to update address
       await updateProfile({
         address: {
           street: addressData.street,
           city: addressData.city,
           state: addressData.state,
-          country: addressData.country,
+          country: countryCode,
           postalCode: addressData.postalCode
         }
       });
