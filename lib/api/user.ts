@@ -16,6 +16,13 @@ export interface UserProfile {
   transactionsCount?: number;
   monthlySpending?: number;
   yearlySpending?: number;
+  address?: {
+    street?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    postalCode?: string;
+  };
   tier?: {
     id: number;
     level: number;
@@ -134,6 +141,7 @@ export const userApi = {
   // Get user profile with tier info
   getProfile: async (): Promise<{ data: UserProfile }> => {
     const response = await apiClient.get('/users/profile');
+    // The API returns data wrapped in a 'data' property
     return response.data;
   },
 

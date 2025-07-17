@@ -1,5 +1,4 @@
 "use client";
-import CheckboxCustom from "@/components/shared/Checkbox";
 import SearchableSelect from "@/components/shared/SearchableSelect";
 import { useState, useEffect, useMemo } from "react";
 import { useAuthStore } from "@/stores/authStore";
@@ -8,11 +7,11 @@ import { toast } from "react-toastify";
 import { IconLock, IconInfoCircle } from "@tabler/icons-react";
 import ChangePassword from "@/components/settings/security/ChangePassword";
 import LinkedProviders from "@/components/settings/profile/LinkedProviders";
-import { getNames, getCode } from 'country-list';
+import { getNames, getCode, getName } from 'country-list';
 
 const Profile = () => {
   const { user } = useAuthStore();
-  const { updateProfile, fetchProfile } = useUserStore();
+  const { profile, updateProfile, fetchProfile } = useUserStore();
   
   // Get country list and add "Select Country" as first option
   const countries = useMemo(() => {
@@ -63,20 +62,48 @@ const Profile = () => {
   // Check if user is KYC verified
   const isKycVerified = user?.kycStatus === 'approved';
 
+  // Fetch profile data on mount
   useEffect(() => {
-    // Update form data when user data is loaded
-    if (user) {
+    fetchProfile();
+  }, []);
+
+  useEffect(() => {
+    
+    // Try profile first, then fall back to user from auth
+    const dataSource = profile || user;
+    
+    // Update form data when data is loaded
+    if (dataSource) {
       const userData = {
-        firstName: user.firstName || "",
-        lastName: user.lastName || "",
-        email: user.email || "",
-        phone: user.phone || "",
+        firstName: dataSource.firstName || "",
+        lastName: dataSource.lastName || "",
+        email: dataSource.email || "",
+        phone: dataSource.phone || "",
         gender: "male", // Default since it's not in the user object
       };
       setFormData(userData);
       setOriginalFormData(userData);
+      
+      // Also populate address data if available
+      if (profile?.address) {
+        // Convert ISO country code back to country name for display
+        let countryName = "Select Country";
+        if (profile.address.country) {
+          countryName = getName(profile.address.country) || profile.address.country;
+        }
+        
+        const addressData = {
+          street: profile.address.street || "",
+          city: profile.address.city || "",
+          state: profile.address.state || "",
+          country: countryName,
+          postalCode: profile.address.postalCode || ""
+        };
+        setAddressData(addressData);
+        setOriginalAddressData(addressData);
+      }
     }
-  }, [user]);
+  }, [profile]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -354,11 +381,7 @@ const Profile = () => {
             </div>
 
             <div className="col-span-2">
-              <div className="flex flex-col gap-4">
-                <CheckboxCustom label="I agree to the privacy & policy" />
-                <CheckboxCustom label="I agree with all terms & conditions" />
-              </div>
-              <div className="flex mt-6 xxl:mt-10 gap-4">
+              <div className="flex gap-4">
                 <button 
                   type="submit"
                   className="btn-primary px-5 disabled:opacity-50 disabled:cursor-not-allowed"
