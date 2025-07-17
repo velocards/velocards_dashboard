@@ -12,12 +12,11 @@ interface KycModalProps {
 }
 
 const KycModal: React.FC<KycModalProps> = ({ isOpen, onClose }) => {
-  const { kycStatus, checkStatus, clearError, reset, resetKyc, isLoading, isResetting, isResuming } = useKycStore();
+  const { kycStatus, checkStatus, clearError, reset, resetKyc, isLoading, isResetting } = useKycStore();
   const { checkAuth, user } = useAuthStore();
   const router = useRouter();
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
   const [lastCheckTime, setLastCheckTime] = useState<Date | null>(null);
-  const [isManuallyResuming, setIsManuallyResuming] = useState(false);
   const [mounted, setMounted] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -33,8 +32,6 @@ const KycModal: React.FC<KycModalProps> = ({ isOpen, onClose }) => {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
-    // Reset manual resuming flag
-    setIsManuallyResuming(false);
     onClose();
   };
 
@@ -143,7 +140,7 @@ const KycModal: React.FC<KycModalProps> = ({ isOpen, onClose }) => {
                   Continue
                 </button>
               </div>
-            ) : (kycStatus === 'pending' || (user?.kycStatus === 'pending' && kycStatus !== null)) && !isManuallyResuming ? (
+            ) : (kycStatus === 'pending' || (user?.kycStatus === 'pending' && kycStatus !== null)) ? (
               <div className="text-center py-8">
                 <div className="w-20 h-20 mx-auto bg-yellow-100 rounded-full flex items-center justify-center mb-4 animate-pulse">
                   <i className="las la-hourglass-half text-4xl text-yellow-600"></i>
@@ -180,14 +177,11 @@ const KycModal: React.FC<KycModalProps> = ({ isOpen, onClose }) => {
                           intervalRef.current = null;
                         }
                         
-                        // Set flag to indicate user manually requested resume
-                        setIsManuallyResuming(true);
-                        
                         // Reset store to clear old tokens and show verification form
                         reset();
                         
                         // The KycVerification component will automatically try to initialize
-                        // We don't need to do anything else here
+                        // and the backend will handle the resume automatically
                       } catch (error) {
                         // Error will be handled by the store
                       }

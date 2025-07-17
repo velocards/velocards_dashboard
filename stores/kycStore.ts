@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 
 interface KycStore {
   // State
-  kycStatus: 'new' | 'pending' | 'approved' | 'rejected' | 'expired' | null;
+  kycStatus: 'new' | 'pending' | 'approved' | 'rejected' | 'expired' | 'completed' | 'failed' | null;
   kycAccessToken: string | null;
   applicantId: string | null;
   isLoading: boolean;
@@ -21,7 +21,7 @@ interface KycStore {
   lastChecked: Date | null;
   lastInitiateAttempt: Date | null;
   isRateLimited: boolean;
-  isResuming: boolean; // NEW: Indicates whether this is a resumed session
+  isResuming: boolean;
 
   // Actions
   initiateKyc: () => Promise<KycInitiateResponse | null>;
@@ -59,16 +59,6 @@ export const useKycStore = create<KycStore>()(
           return null;
         }
         
-        // Check if we already have an access token
-        if (state.kycAccessToken && state.kycStatus !== 'expired') {
-          return {
-            accessToken: state.kycAccessToken,
-            applicantId: state.applicantId || '',
-            status: state.kycStatus || 'new',
-            expiresAt: new Date().toISOString(),
-          };
-        }
-        
         set({ 
           isInitializing: true, 
           error: null, 
@@ -91,11 +81,11 @@ export const useKycStore = create<KycStore>()(
             isResuming: isResuming,
           });
           
-          // Show appropriate toast message
+          // Show appropriate toast message based on resume status
           if (isResuming) {
-            toast.info('Continuing your verification from where you left off...');
+            toast.info('Resuming your verification process...');
           } else {
-            toast.info('Starting new verification process...');
+            toast.info('Starting verification process...');
           }
           
           return response;

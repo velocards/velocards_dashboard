@@ -5,14 +5,15 @@ export interface KycInitiateResponse {
   accessToken: string;
   userId: string;
   applicantId: string;
-  status: 'new' | 'pending' | 'approved' | 'rejected' | 'expired';
-  isResume?: boolean; // NEW FIELD - indicates this is a resumed session
+  status: 'new' | 'pending' | 'completed' | 'failed';
+  isResume: boolean; // Indicates if this is a resumed session
 }
 
 export interface KycStatusResponse {
-  status: 'new' | 'pending' | 'approved' | 'rejected' | 'expired';
-  updatedAt?: string;
-  reason?: string; // Rejection reason if applicable
+  status: 'pending' | 'approved' | 'rejected' | 'expired';
+  reviewAnswer?: 'GREEN' | 'RED' | 'RETRY'; // Only if reviewed
+  moderationComment?: string; // Only if rejected
+  updatedAt: string;
 }
 
 export interface KycResetResponse {

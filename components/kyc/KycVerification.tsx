@@ -16,7 +16,7 @@ const KycVerification: React.FC<KycVerificationProps> = ({
 }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { initiateKyc, reset } = useKycStore();
+  const { initiateKyc, reset, isResuming } = useKycStore();
 
   // Simple initialization on mount - only once
   useEffect(() => {
@@ -187,7 +187,9 @@ const KycVerification: React.FC<KycVerificationProps> = ({
           <div className="absolute inset-0 bg-white bg-opacity-95 flex items-center justify-center">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading verification...</p>
+              <p className="text-gray-600">
+                {isResuming ? 'Resuming your verification...' : 'Loading verification...'}
+              </p>
             </div>
           </div>
         )}
