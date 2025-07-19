@@ -9,6 +9,7 @@ export const secureApiClient = axios.create({
   withCredentials: true, // Essential for cookie-based auth
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
   },
   timeout: 30000, // 30 seconds
 });
@@ -99,12 +100,9 @@ secureApiClient.interceptors.request.use(
       config.headers['X-CSRF-Token'] = csrfToken;
     }
     
-    // Add request timestamp for additional security
-    if (config.headers) {
-      config.headers['X-Request-Time'] = new Date().toISOString();
-    }
-    
     // Add request signing for sensitive operations
+    // NOTE: These headers will trigger CORS preflight, but that's acceptable
+    // for sensitive operations that require additional security
     if (requiresSigning(config.url || '', config.method?.toUpperCase() || '')) {
       // For now, we'll add placeholder headers
       // In production, you'd get the secret from secure storage
