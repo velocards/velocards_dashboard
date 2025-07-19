@@ -44,8 +44,9 @@ export const useBalanceStore = create<BalanceState>((set) => ({
     
     try {
       const { data } = await balanceApi.getBalanceHistory({
-        ...filters,
-        limit: filters?.limit || 100 // Get more for all transactions
+        page: 1,
+        limit: 100, // Max allowed by backend
+        ...filters, // Allow overrides but with defaults set first
       });
       set({ 
         balanceHistory: data.transactions || [],

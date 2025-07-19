@@ -26,10 +26,11 @@ const DepositsOverview = () => {
       setIsLoading(true);
       const currentYear = new Date().getFullYear();
       const { data } = await balanceApi.getBalanceHistory({
-        startDate: `${currentYear}-01-01`,
-        endDate: `${currentYear}-12-31`,
+        from: `${currentYear}-01-01`,
+        to: `${currentYear}-12-31`,
         type: 'deposit',
-        limit: 1000
+        limit: 100, // Max allowed by backend
+        page: 1
       });
 
       // Process the deposit data for chart visualization

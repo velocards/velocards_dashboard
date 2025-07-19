@@ -24,9 +24,11 @@ export interface BalanceInfo {
 export interface BalanceHistoryFilters {
   page?: number;
   limit?: number;
-  type?: 'deposit' | 'card_funding' | 'refund' | 'withdrawal' | 'fee';
-  startDate?: string;
-  endDate?: string;
+  type?: 'deposit' | 'card_funding' | 'refund' | 'withdrawal' | 'fee' | 'adjustment' | 'all';
+  from?: string;
+  to?: string;
+  sortBy?: 'created_at' | 'amount';
+  sortOrder?: 'asc' | 'desc';
 }
 
 // API functions
