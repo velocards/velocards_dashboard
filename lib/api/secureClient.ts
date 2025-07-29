@@ -133,45 +133,40 @@ secureApiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
     
-    // Handle 401 Unauthorized - try to refresh token
+    // Handle 401 Unauthorized
     const isAuthEndpoint = originalRequest.url?.includes('/auth/');
     const errorData = error.response?.data as any;
     const isTokenExpired = error.response?.status === 401 && 
                           (errorData?.message === 'Token expired' || 
                            errorData?.error?.message === 'Token expired');
     
-    if (isTokenExpired && !originalRequest._retry && !isAuthEndpoint) {
+    // For token expiration, immediately redirect to login (security requirement)
+    if (isTokenExpired && !isAuthEndpoint) {
+      // Clear tokens
+      secureTokenManager.removeToken();
+      
+      // Redirect to login with session expired message
+      if (typeof window !== 'undefined' && 
+          !window.location.pathname.includes('/auth/')) {
+        window.location.replace('/auth/sign-in?error=session_expired');
+      }
+      
+      return Promise.reject(error);
+    }
+    
+    // Handle other 401 errors (not token expiration)
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint && !isTokenExpired) {
       originalRequest._retry = true;
       
-      try {
-        // Try to refresh the token
-        const { data } = await secureApiClient.post('/auth/refresh');
-        
-        // For localStorage mode, save new token
-        if (!secureTokenManager.isUsingCookies() && data.data?.tokens?.accessToken) {
-          secureTokenManager.setToken(data.data.tokens.accessToken);
-          
-          // Retry original request with new token
-          if (originalRequest.headers) {
-            originalRequest.headers.Authorization = `Bearer ${data.data.tokens.accessToken}`;
-          }
-        }
-        
-        // Retry the original request
-        return secureApiClient(originalRequest);
-      } catch (refreshError) {
-        // Refresh failed - clear tokens and redirect
-        secureTokenManager.removeToken();
-        
-        // Only redirect if we're in the browser and not already on auth pages
-        if (typeof window !== 'undefined' && 
-            !window.location.pathname.includes('/auth/')) {
-          // Use replace to prevent back button issues
-          window.location.replace('/auth/sign-in?error=session_expired');
-        }
-        
-        return Promise.reject(refreshError);
+      // Clear tokens and redirect
+      secureTokenManager.removeToken();
+      
+      if (typeof window !== 'undefined' && 
+          !window.location.pathname.includes('/auth/')) {
+        window.location.replace('/auth/sign-in');
       }
+      
+      return Promise.reject(error);
     }
     
     // Handle 403 Forbidden (CSRF token issues)

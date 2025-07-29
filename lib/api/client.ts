@@ -64,44 +64,39 @@ apiClient.interceptors.response.use(
     
     // Handle error response without logging
     
-    // Handle 401 Unauthorized - try to refresh token
-    // Skip refresh for auth endpoints to avoid redirect loops
+    // Handle 401 Unauthorized
+    // Skip auth endpoints to avoid redirect loops
     const isAuthEndpoint = originalRequest.url?.includes('/auth/');
     const errorData = error.response?.data as any;
     const isTokenExpired = error.response?.status === 401 && 
                           (errorData?.message === 'Token expired' || 
                            errorData?.error?.message === 'Token expired');
     
-    if (isTokenExpired && !originalRequest._retry && !isAuthEndpoint) {
-      originalRequest._retry = true;
+    // For token expiration, immediately redirect to login (security requirement)
+    if (isTokenExpired && !isAuthEndpoint) {
+      // Clear tokens
+      tokenManager.removeToken();
       
-      try {
-        // Try to refresh the token
-        const { data } = await apiClient.post('/auth/refresh');
-        
-        // Save new token - expecting tokens object based on auth API definition
-        if (data.data?.tokens?.accessToken) {
-          tokenManager.setToken(data.data.tokens.accessToken);
-          
-          // Retry original request with new token
-          if (originalRequest.headers) {
-            originalRequest.headers.Authorization = `Bearer ${data.data.tokens.accessToken}`;
-          }
-          
-          return apiClient(originalRequest);
-        }
-      } catch (refreshError) {
-        // Refresh failed - logout user
-        tokenManager.removeToken();
-        
-        // Only redirect if we're in the browser and not already on auth pages
-        if (typeof window !== 'undefined' && 
-            !window.location.pathname.includes('/auth/')) {
-          window.location.href = '/auth/sign-in';
-        }
-        
-        return Promise.reject(refreshError);
+      // Redirect to login with session expired message
+      if (typeof window !== 'undefined' && 
+          !window.location.pathname.includes('/auth/')) {
+        window.location.href = '/auth/sign-in?error=session_expired';
       }
+      
+      return Promise.reject(error);
+    }
+    
+    // Handle other 401 errors (not token expiration)
+    if (error.response?.status === 401 && !isAuthEndpoint && !isTokenExpired) {
+      // Clear tokens and redirect
+      tokenManager.removeToken();
+      
+      if (typeof window !== 'undefined' && 
+          !window.location.pathname.includes('/auth/')) {
+        window.location.href = '/auth/sign-in';
+      }
+      
+      return Promise.reject(error);
     }
     
     // Handle other errors
