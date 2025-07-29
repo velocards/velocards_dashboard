@@ -67,21 +67,25 @@ apiClient.interceptors.response.use(
     // Handle 401 Unauthorized - try to refresh token
     // Skip refresh for auth endpoints to avoid redirect loops
     const isAuthEndpoint = originalRequest.url?.includes('/auth/');
+    const errorData = error.response?.data as any;
+    const isTokenExpired = error.response?.status === 401 && 
+                          (errorData?.message === 'Token expired' || 
+                           errorData?.error?.message === 'Token expired');
     
-    if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
+    if (isTokenExpired && !originalRequest._retry && !isAuthEndpoint) {
       originalRequest._retry = true;
       
       try {
         // Try to refresh the token
         const { data } = await apiClient.post('/auth/refresh');
         
-        // Save new token - v1.2.0 change: accessToken is returned directly
-        if (data.data?.accessToken) {
-          tokenManager.setToken(data.data.accessToken);
+        // Save new token - expecting tokens object based on auth API definition
+        if (data.data?.tokens?.accessToken) {
+          tokenManager.setToken(data.data.tokens.accessToken);
           
           // Retry original request with new token
           if (originalRequest.headers) {
-            originalRequest.headers.Authorization = `Bearer ${data.data.accessToken}`;
+            originalRequest.headers.Authorization = `Bearer ${data.data.tokens.accessToken}`;
           }
           
           return apiClient(originalRequest);

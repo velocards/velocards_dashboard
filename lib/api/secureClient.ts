@@ -135,8 +135,12 @@ secureApiClient.interceptors.response.use(
     
     // Handle 401 Unauthorized - try to refresh token
     const isAuthEndpoint = originalRequest.url?.includes('/auth/');
+    const errorData = error.response?.data as any;
+    const isTokenExpired = error.response?.status === 401 && 
+                          (errorData?.message === 'Token expired' || 
+                           errorData?.error?.message === 'Token expired');
     
-    if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
+    if (isTokenExpired && !originalRequest._retry && !isAuthEndpoint) {
       originalRequest._retry = true;
       
       try {
@@ -144,12 +148,12 @@ secureApiClient.interceptors.response.use(
         const { data } = await secureApiClient.post('/auth/refresh');
         
         // For localStorage mode, save new token
-        if (!secureTokenManager.isUsingCookies() && data.data?.accessToken) {
-          secureTokenManager.setToken(data.data.accessToken);
+        if (!secureTokenManager.isUsingCookies() && data.data?.tokens?.accessToken) {
+          secureTokenManager.setToken(data.data.tokens.accessToken);
           
           // Retry original request with new token
           if (originalRequest.headers) {
-            originalRequest.headers.Authorization = `Bearer ${data.data.accessToken}`;
+            originalRequest.headers.Authorization = `Bearer ${data.data.tokens.accessToken}`;
           }
         }
         
