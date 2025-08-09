@@ -117,7 +117,7 @@ export const twoFactorApi = {
 
   // Initialize 2FA setup
   setup: async (): Promise<ApiResponse<TwoFactorSetupResponse>> => {
-    const response = await v2Client.post<ApiResponse<TwoFactorSetupResponse>>('/auth/2fa/setup');
+    const response = await v2Client.post<ApiResponse<TwoFactorSetupResponse>>('/auth/2fa/setup', {});
     return response.data;
   },
 
