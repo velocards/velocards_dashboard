@@ -76,7 +76,11 @@ export const useTwoFactorStore = create<TwoFactorState>((set, get) => ({
     set({ isLoading: true, error: null });
     
     try {
-      await twoFactorApi.enable({ totpCode: code, password });
+      // Debug log to see what we're sending
+      const payload = { totpCode: code, password };
+      console.log('Sending 2FA enable request:', payload);
+      
+      await twoFactorApi.enable(payload);
       
       // Update status
       set({
@@ -86,7 +90,13 @@ export const useTwoFactorStore = create<TwoFactorState>((set, get) => ({
       });
       
       toast.success('Two-factor authentication enabled successfully!');
-    } catch (error) {
+    } catch (error: any) {
+      console.error('2FA Enable Error:', {
+        response: error.response?.data,
+        status: error.response?.status,
+        payload: { totpCode: code, password: '***hidden***' }
+      });
+      
       const errorMessage = getErrorMessage(error);
       set({
         isLoading: false,

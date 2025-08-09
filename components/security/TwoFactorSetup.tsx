@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useTwoFactorStore } from '@/stores/twoFactorStore';
 import { IconShieldCheck, IconCopy, IconDownload, IconLoader2 } from '@tabler/icons-react';
 import { toast } from 'react-toastify';
-import QRCode from 'qrcode';
 
 interface TwoFactorSetupProps {
   onComplete?: () => void;
@@ -93,8 +92,21 @@ const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({ onComplete, onCancel })
       await enable2FA(verificationCode, password);
       setStep(3);
       setShowBackupCodes(true);
-    } catch (error) {
-      // Error is handled in store
+    } catch (error: any) {
+      // Check if setup expired
+      if (error?.response?.data?.error?.includes('expired')) {
+        toast.error('Setup has expired. Please restart the 2FA setup process.');
+        // Reset to beginning
+        setTimeout(() => {
+          clearSetupData();
+          clearError();
+          initiateSetup();
+          setStep(1);
+          setVerificationCode('');
+          setPassword('');
+        }, 2000);
+      }
+      // Other errors are handled in store
     }
   };
 
