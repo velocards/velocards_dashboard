@@ -51,7 +51,7 @@ export interface TwoFactorSetupResponse {
 }
 
 export interface TwoFactorEnableRequest {
-  code: string;
+  totpCode: string;
   password: string;
 }
 

@@ -76,7 +76,7 @@ export const useTwoFactorStore = create<TwoFactorState>((set, get) => ({
     set({ isLoading: true, error: null });
     
     try {
-      await twoFactorApi.enable({ code, password });
+      await twoFactorApi.enable({ totpCode: code, password });
       
       // Update status
       set({
