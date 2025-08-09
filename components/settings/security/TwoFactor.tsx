@@ -264,6 +264,7 @@ const TwoFactor = () => {
         width="max-w-lg"
       >
         <div className="p-4">
+          <h3 className="text-xl font-semibold mb-4">Backup Recovery Codes</h3>
           {backupCodes.length === 0 ? (
             <>
               <p className="text-n600 mb-4">
@@ -319,6 +320,10 @@ const TwoFactor = () => {
         width="max-w-2xl"
       >
         <div className="p-4">
+          <h3 className="text-xl font-semibold mb-4">Active Sessions</h3>
+          <p className="text-sm text-n600 mb-4">
+            These devices are currently logged into your account. Revoke any sessions you don't recognize.
+          </p>
           {sessions.length === 0 ? (
             <p className="text-center text-n600 py-4">No active sessions found</p>
           ) : (
@@ -331,6 +336,9 @@ const TwoFactor = () => {
                       <p className="text-sm text-n600">IP: {session.ipAddress}</p>
                       <p className="text-sm text-n600">
                         Last active: {formatDate(session.lastActivity)}
+                      </p>
+                      <p className="text-sm text-n600">
+                        Created: {formatDate(session.createdAt)}
                       </p>
                     </div>
                     <button
