@@ -1,4 +1,4 @@
-import { apiClient, ApiResponse } from './secureClient';
+import { apiClient, ApiResponse, secureTokenManager } from './secureClient';
 import axios from 'axios';
 
 // Create a separate client for v2 endpoints
@@ -16,12 +16,14 @@ const v2Client = axios.create({
   timeout: 30000,
 });
 
-// Add request interceptor for authentication
+// Add request interceptor for authentication - use the same token manager as main client
 v2Client.interceptors.request.use((config) => {
-  // Get token from localStorage if available
-  const token = localStorage.getItem('accessToken');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  // Use the secure token manager to handle both cookie and localStorage auth
+  if (!secureTokenManager.isUsingCookies()) {
+    const token = secureTokenManager.getToken();
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
   }
   return config;
 });
