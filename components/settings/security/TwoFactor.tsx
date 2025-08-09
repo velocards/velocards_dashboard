@@ -5,27 +5,19 @@ import { useTwoFactorStore } from '@/stores/twoFactorStore';
 import TwoFactorSetup from '@/components/security/TwoFactorSetup';
 import Modal from '@/components/shared/Modal';
 import OptionsVertical from "@/components/shared/OptionsVertical";
-import { IconShieldCheck, IconShieldOff, IconLoader2, IconRefresh, IconDevices, IconDownload } from '@tabler/icons-react';
+import { IconShieldCheck, IconShieldOff, IconLoader2, IconHelp } from '@tabler/icons-react';
 import { toast } from 'react-toastify';
 
 const TwoFactor = () => {
   const [showSetupModal, setShowSetupModal] = useState(false);
   const [showDisableModal, setShowDisableModal] = useState(false);
-  const [showBackupCodesModal, setShowBackupCodesModal] = useState(false);
-  const [showSessionsModal, setShowSessionsModal] = useState(false);
   const [disablePassword, setDisablePassword] = useState('');
-  const [regeneratePassword, setRegeneratePassword] = useState('');
-  const [backupCodes, setBackupCodes] = useState<string[]>([]);
   
   const {
     status,
-    sessions,
     isLoading,
     checkStatus,
     disable2FA,
-    regenerateBackupCodes,
-    getSessions,
-    revokeSession,
   } = useTwoFactorStore();
 
   useEffect(() => {
@@ -53,45 +45,10 @@ const TwoFactor = () => {
     }
   };
 
-  const handleRegenerateBackupCodes = async () => {
-    if (!regeneratePassword) {
-      toast.error('Please enter your password');
-      return;
-    }
-
-    try {
-      const codes = await regenerateBackupCodes(regeneratePassword);
-      setBackupCodes(codes);
-      setRegeneratePassword('');
-    } catch (error) {
-      // Error handled in store
-    }
-  };
-
-  const handleDownloadBackupCodes = () => {
-    if (backupCodes.length === 0) return;
-    
-    const codesText = backupCodes.join('\n');
-    const blob = new Blob([codesText], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'velocards-2fa-backup-codes.txt';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-    toast.success('Backup codes downloaded');
-  };
-
-  const handleShowSessions = async () => {
-    await getSessions();
-    setShowSessionsModal(true);
-  };
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString();
   };
+
   return (
     <>
       <div className="box xl:p-8">
@@ -157,51 +114,30 @@ const TwoFactor = () => {
                 )}
               </div>
 
-              {/* Backup Codes */}
+              {/* Lost Access Help */}
               <div className="box p-4">
-                <h5 className="font-semibold mb-2">Backup Codes</h5>
+                <h5 className="font-semibold mb-2">Lost Your Authenticator?</h5>
                 <p className="text-sm text-n600 mb-4">
-                  Generate recovery codes for account access if you lose your device
+                  If you've lost access to your authenticator app, our support team can help you regain access to your account
                 </p>
-                <button
-                  onClick={() => setShowBackupCodesModal(true)}
-                  disabled={!status?.isEnabled}
+                <a
+                  href="/support/contact"
                   className="btn-outline w-full flex items-center justify-center gap-2"
                 >
-                  <IconRefresh size={18} />
-                  Regenerate Codes
-                </button>
-              </div>
-
-              {/* Active Sessions */}
-              <div className="box p-4">
-                <h5 className="font-semibold mb-2">Active Sessions</h5>
-                <p className="text-sm text-n600 mb-4">
-                  View and manage devices currently logged into your account
-                </p>
-                <button
-                  onClick={handleShowSessions}
-                  className="btn-outline w-full flex items-center justify-center gap-2"
-                >
-                  <IconDevices size={18} />
-                  Manage Sessions
-                </button>
-              </div>
-
-              {/* Account Recovery */}
-              <div className="box p-4">
-                <h5 className="font-semibold mb-2">Account Recovery</h5>
-                <p className="text-sm text-n600 mb-4">
-                  Configure recovery options if you lose access to your 2FA device
-                </p>
-                <button
-                  className="btn-outline w-full"
-                  disabled
-                >
-                  Configure Recovery
-                </button>
+                  <IconHelp size={18} />
+                  Contact Support
+                </a>
               </div>
             </div>
+
+            {/* Important Note */}
+            {status?.isEnabled && (
+              <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <p className="text-sm text-blue-800 dark:text-blue-200">
+                  <strong>Important:</strong> Keep your authenticator app installed and backed up. If you lose access to your authenticator, you'll need to contact support to regain access to your account.
+                </p>
+              </div>
+            )}
           </>
         )}
       </div>
@@ -217,6 +153,7 @@ const TwoFactor = () => {
           onComplete={() => {
             setShowSetupModal(false);
             checkStatus();
+            toast.success('Two-factor authentication has been enabled successfully!');
           }}
           onCancel={() => setShowSetupModal(false)}
         />
@@ -229,6 +166,7 @@ const TwoFactor = () => {
         width="max-w-md"
       >
         <div className="p-4">
+          <h3 className="text-xl font-semibold mb-4">Disable Two-Factor Authentication</h3>
           <p className="text-n600 mb-4">
             Enter your password to disable 2FA. This will make your account less secure.
           </p>
@@ -254,104 +192,6 @@ const TwoFactor = () => {
               {isLoading ? 'Disabling...' : 'Disable 2FA'}
             </button>
           </div>
-        </div>
-      </Modal>
-
-      {/* Backup Codes Modal */}
-      <Modal
-        open={showBackupCodesModal}
-        toggleOpen={() => setShowBackupCodesModal(false)}
-        width="max-w-lg"
-      >
-        <div className="p-4">
-          <h3 className="text-xl font-semibold mb-4">Backup Recovery Codes</h3>
-          {backupCodes.length === 0 ? (
-            <>
-              <p className="text-n600 mb-4">
-                Enter your password to generate new backup codes. This will invalidate any existing codes.
-              </p>
-              <input
-                type="password"
-                value={regeneratePassword}
-                onChange={(e) => setRegeneratePassword(e.target.value)}
-                placeholder="Enter your password"
-                className="w-full px-4 py-2 border border-n200 rounded-lg mb-4"
-              />
-              <button
-                onClick={handleRegenerateBackupCodes}
-                disabled={isLoading || !regeneratePassword}
-                className="w-full btn-primary"
-              >
-                {isLoading ? 'Generating...' : 'Generate New Codes'}
-              </button>
-            </>
-          ) : (
-            <>
-              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 mb-4">
-                <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                  Save these codes in a secure place. Each code can only be used once.
-                </p>
-              </div>
-              <div className="bg-n100 dark:bg-n800 rounded-lg p-4 mb-4">
-                <div className="grid grid-cols-2 gap-2">
-                  {backupCodes.map((code, index) => (
-                    <div key={index} className="font-mono text-sm py-1">
-                      {index + 1}. {code}
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <button
-                onClick={handleDownloadBackupCodes}
-                className="w-full btn-primary flex items-center justify-center gap-2"
-              >
-                <IconDownload size={18} />
-                Download Codes
-              </button>
-            </>
-          )}
-        </div>
-      </Modal>
-
-      {/* Sessions Modal */}
-      <Modal
-        open={showSessionsModal}
-        toggleOpen={() => setShowSessionsModal(false)}
-        width="max-w-2xl"
-      >
-        <div className="p-4">
-          <h3 className="text-xl font-semibold mb-4">Active Sessions</h3>
-          <p className="text-sm text-n600 mb-4">
-            These devices are currently logged into your account. Revoke any sessions you don't recognize.
-          </p>
-          {sessions.length === 0 ? (
-            <p className="text-center text-n600 py-4">No active sessions found</p>
-          ) : (
-            <div className="space-y-3">
-              {sessions.map((session) => (
-                <div key={session.id} className="box p-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="font-medium">{session.userAgent}</p>
-                      <p className="text-sm text-n600">IP: {session.ipAddress}</p>
-                      <p className="text-sm text-n600">
-                        Last active: {formatDate(session.lastActivity)}
-                      </p>
-                      <p className="text-sm text-n600">
-                        Created: {formatDate(session.createdAt)}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => revokeSession(session.id)}
-                      className="btn-outline-danger btn-sm"
-                    >
-                      Revoke
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </Modal>
     </>

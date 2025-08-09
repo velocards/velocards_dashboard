@@ -20,11 +20,34 @@ const v2Client = axios.create({
 v2Client.interceptors.request.use((config) => {
   // Always try to add the token from localStorage
   const token = localStorage.getItem('accessToken');
+  
+  // Debug logging in development
+  if (typeof window !== 'undefined' && !token) {
+    console.warn('No access token found in localStorage for 2FA request');
+  }
+  
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
+
+// Add response interceptor for error handling
+v2Client.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Log error details for debugging
+    if (error.response?.status === 400 || error.response?.status === 401) {
+      console.error('2FA API Error:', {
+        status: error.response.status,
+        data: error.response.data,
+        url: error.config?.url,
+        headers: error.config?.headers
+      });
+    }
+    return Promise.reject(error);
+  }
+);
 
 // Types for 2FA operations
 export interface TwoFactorStatus {
