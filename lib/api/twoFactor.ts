@@ -3,8 +3,19 @@ import axios from 'axios';
 
 // Create a separate client for v2 endpoints
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.velocards.com/api/v1';
-// Remove the /v1 and add /v2
-const v2BaseUrl = API_BASE_URL.replace('/api/v1', '/api/v2');
+
+// Construct v2 URL properly
+let v2BaseUrl: string;
+if (API_BASE_URL.includes('/api/v1')) {
+  // If it already has /api/v1, replace with /api/v2
+  v2BaseUrl = API_BASE_URL.replace('/api/v1', '/api/v2');
+} else if (API_BASE_URL.includes('/api/')) {
+  // If it has /api/ but not v1, add v2
+  v2BaseUrl = API_BASE_URL + '/v2';
+} else {
+  // If no /api path at all, add /api/v2
+  v2BaseUrl = API_BASE_URL + '/api/v2';
+}
 
 const v2Client = axios.create({
   baseURL: v2BaseUrl,
@@ -21,10 +32,13 @@ v2Client.interceptors.request.use((config) => {
   // Always try to add the token from localStorage
   const token = localStorage.getItem('accessToken');
   
-  // Debug logging in development
-  if (typeof window !== 'undefined' && !token) {
-    console.warn('No access token found in localStorage for 2FA request');
-  }
+  // Debug logging
+  console.log('2FA Request:', {
+    hasToken: !!token,
+    tokenPreview: token ? `${token.substring(0, 20)}...` : 'none',
+    url: config.url,
+    fullURL: `${config.baseURL}${config.url}`
+  });
   
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -36,15 +50,17 @@ v2Client.interceptors.request.use((config) => {
 v2Client.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Log error details for debugging
-    if (error.response?.status === 400 || error.response?.status === 401) {
-      console.error('2FA API Error:', {
-        status: error.response.status,
-        data: error.response.data,
-        url: error.config?.url,
-        headers: error.config?.headers
-      });
-    }
+    // Always log error details for debugging
+    console.error('2FA API Error Details:', {
+      status: error.response?.status,
+      data: error.response?.data,
+      url: error.config?.url,
+      method: error.config?.method,
+      baseURL: error.config?.baseURL,
+      headers: error.config?.headers,
+      fullURL: `${error.config?.baseURL}${error.config?.url}`
+    });
+    
     return Promise.reject(error);
   }
 );
