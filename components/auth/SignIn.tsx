@@ -6,8 +6,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuthStore } from "@/stores/authStore";
+import { useTwoFactorStore } from "@/stores/twoFactorStore";
+import { tokenManager } from "@/lib/api/secureClient";
 import CloudflareTurnstile, { TurnstileRef } from "./CloudflareTurnstile";
 import AuthPageVisual from "./AuthPageVisual";
+import TwoFactorVerification from "@/components/security/TwoFactorVerification";
 
 // Form validation schema
 const loginSchema = z.object({
@@ -21,7 +24,10 @@ const SignIn = () => {
   const [showPass, setShowPass] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [loginError, setLoginError] = useState<string>("");
-  const { login, isLoading, error, clearError } = useAuthStore();
+  const { login, isLoading, error, clearError, requiresTwoFactor, pendingUser, clearPendingTwoFactor } = useAuthStore();
+  const { verify2FA } = useTwoFactorStore();
+  const [is2FALoading, setIs2FALoading] = useState(false);
+  const [twoFactorError, setTwoFactorError] = useState<string | null>(null);
   const turnstileRef = useRef<TurnstileRef>(null);
   
   const {
@@ -72,7 +78,65 @@ const SignIn = () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.velocards.com/api/v1';
     window.location.href = `${apiUrl}/auth/google`;
   };
+  
+  const handleTwoFactorVerify = async (code: string, isBackupCode?: boolean) => {
+    setIs2FALoading(true);
+    setTwoFactorError(null);
+    
+    try {
+      // Call the 2FA verification endpoint
+      const result = await verify2FA(code, isBackupCode);
+      
+      // Store tokens if provided
+      if (result.tokens?.accessToken) {
+        tokenManager.setToken(result.tokens.accessToken);
+      }
+      
+      // Update auth state
+      useAuthStore.setState({
+        user: result.user,
+        isAuthenticated: true,
+        requiresTwoFactor: false,
+        pendingUser: null,
+      });
+      
+      // Redirect handled by auth layout
+    } catch (error: any) {
+      setTwoFactorError(error?.message || 'Invalid verification code');
+      throw error;
+    } finally {
+      setIs2FALoading(false);
+    }
+  };
+  
+  const handleCancelTwoFactor = () => {
+    clearPendingTwoFactor();
+    setTwoFactorError(null);
+  };
 
+  // Show 2FA verification if required
+  if (requiresTwoFactor && pendingUser) {
+    return (
+      <div className="box p-3 sm:p-4 md:p-6 xl:p-8">
+        <div className="max-w-[1200px] mx-auto grid grid-cols-12 gap-4 sm:gap-6 lg:gap-8 items-stretch">
+          <div className="col-span-12 lg:col-span-7 xl:col-span-6 flex">
+            <div className="box bg-primary/5 dark:bg-bg3 p-4 sm:p-6 lg:p-8 xl:p-10 border border-n30 dark:border-n500 w-full">
+              <TwoFactorVerification
+                onVerify={handleTwoFactorVerify}
+                onCancel={handleCancelTwoFactor}
+                isLoading={is2FALoading}
+                error={twoFactorError}
+              />
+            </div>
+          </div>
+          <div className="col-span-12 lg:col-span-5 xl:col-span-6 hidden lg:block">
+            <AuthPageVisual />
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <div className="box p-3 sm:p-4 md:p-6 xl:p-8">
       <div className="max-w-[1200px] mx-auto grid grid-cols-12 gap-4 sm:gap-6 lg:gap-8 items-stretch">

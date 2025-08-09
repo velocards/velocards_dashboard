@@ -45,8 +45,10 @@ export interface User {
 
 export interface LoginResponse {
   user: User;
-  accessToken: string;
-  expiresIn: number;
+  accessToken?: string;
+  expiresIn?: number;
+  requiresTwoFactor?: boolean;
+  message?: string;
 }
 
 export interface RegisterResponse {
