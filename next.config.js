@@ -42,7 +42,7 @@ const nextConfig = {
           },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+            value: 'camera=(), microphone=(), geolocation=()',
           },
           {
             key: 'Strict-Transport-Security',
@@ -56,7 +56,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: https: blob:",
               "font-src 'self' https://fonts.gstatic.com",
-              "connect-src 'self' https://api.velocards.com https://challenges.cloudflare.com https://api.sumsub.com wss://api.sumsub.com",
+              "connect-src 'self' https://api.velocards.com https://velocardsbackend-production.up.railway.app https://challenges.cloudflare.com https://api.sumsub.com wss://api.sumsub.com",
               "frame-src 'self' https://challenges.cloudflare.com https://api.sumsub.com",
               "object-src 'none'",
               "base-uri 'self'",
