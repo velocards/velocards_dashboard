@@ -14,6 +14,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://velocards.com'),
   title: "VeloCards - Virtual Cards for Modern Digital Payments | by DigiStreets",
   description: "VeloCards by DigiStreets - Secure virtual credit cards for online shopping, subscriptions, and digital payments. Create unlimited cards instantly.",
   keywords: ["Virtual Cards", "Credit Cards", "Online Payments", "Digital Banking", "FinTech", "VeloCards", "DigiStreets", "Secure Payments"],
