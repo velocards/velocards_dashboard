@@ -38,6 +38,7 @@ export const sidebarData = [
         submenus: [
           { title: "Account", url: "/settings/account/" },
           { title: "Profile", url: "/settings/profile/" },
+          { title: "Two-Factor Auth", url: "/settings/2fa/" },
         ],
       },
       {
