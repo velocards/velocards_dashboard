@@ -32,38 +32,11 @@ v2Client.interceptors.request.use((config) => {
   // Always try to add the token from localStorage
   const token = localStorage.getItem('accessToken');
   
-  // Debug logging
-  console.log('2FA Request:', {
-    hasToken: !!token,
-    tokenPreview: token ? `${token.substring(0, 20)}...` : 'none',
-    url: config.url,
-    fullURL: `${config.baseURL}${config.url}`
-  });
-  
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
-
-// Add response interceptor for error handling
-v2Client.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    // Always log error details for debugging
-    console.error('2FA API Error Details:', {
-      status: error.response?.status,
-      data: error.response?.data,
-      url: error.config?.url,
-      method: error.config?.method,
-      baseURL: error.config?.baseURL,
-      headers: error.config?.headers,
-      fullURL: `${error.config?.baseURL}${error.config?.url}`
-    });
-    
-    return Promise.reject(error);
-  }
-);
 
 // Types for 2FA operations
 export interface TwoFactorStatus {
