@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { IconLock, IconInfoCircle } from "@tabler/icons-react";
 import ChangePassword from "@/components/settings/security/ChangePassword";
 import LinkedProviders from "@/components/settings/profile/LinkedProviders";
+import TwoFactor from "@/components/settings/security/TwoFactor";
 import { getNames, getCode, getName } from 'country-list';
 
 const Profile = () => {
@@ -227,10 +228,11 @@ const Profile = () => {
   };
 
   return (
-    <div className="grid grid-cols-12 gap-4 xxxxxl:gap-6">
-      <div className="col-span-12 lg:col-span-6">
-        {/* Account Settings */}
-        <div className="box xxl:p-8 xxxl:p-10 mb-4 xxxxxl:mb-6">
+    <div className="flex flex-col gap-4 xxxxxl:gap-6">
+      <div className="grid grid-cols-12 gap-4 xxxxxl:gap-6">
+        <div className="col-span-12 lg:col-span-6">
+          {/* Account Settings */}
+          <div className="box xxl:p-8 xxxl:p-10 mb-4 xxxxxl:mb-6">
           <h4 className="h4 bb-dashed mb-4 pb-4 md:mb-6 md:pb-6">Account Settings</h4>
           
           {/* KYC Verification Notice */}
@@ -493,15 +495,21 @@ const Profile = () => {
         </div>
       </div>
       <div className="col-span-12 lg:col-span-6">
+        {/* Two-Factor Authentication Section */}
+        <div className="mb-4 xxxxxl:mb-6">
+          <TwoFactor />
+        </div>
+        
         {/* Change Password Section */}
         <ChangePassword />
-        
-        {/* Linked Providers Section */}
-        <div className="mt-4 xxxxxl:mt-6">
-          <LinkedProviders />
-        </div>
       </div>
     </div>
+    
+    {/* Linked Providers Section - Full Width at Bottom */}
+    <div className="col-span-12">
+      <LinkedProviders />
+    </div>
+  </div>
   );
 };
 
