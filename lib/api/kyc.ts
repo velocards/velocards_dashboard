@@ -26,7 +26,7 @@ export const initiateKycVerification = async (): Promise<KycInitiateResponse> =>
   try {
     const response = await apiClient.post<ApiResponse<KycInitiateResponse>>('/kyc/initiate');
     console.log('KYC initiated:', response.data);
-    return response.data.data;
+    return response.data.data!;
   } catch (error) {
     console.error('Failed to initiate KYC:', error);
     throw error;
@@ -37,7 +37,7 @@ export const initiateKycVerification = async (): Promise<KycInitiateResponse> =>
 export const getKycStatus = async (): Promise<KycStatusResponse> => {
   try {
     const response = await apiClient.get<ApiResponse<KycStatusResponse>>('/kyc/status');
-    return response.data.data;
+    return response.data.data!;
   } catch (error) {
     console.error('Failed to get KYC status:', error);
     throw error;
@@ -48,7 +48,7 @@ export const getKycStatus = async (): Promise<KycStatusResponse> => {
 export const resetKycVerification = async (): Promise<KycResetResponse> => {
   try {
     const response = await apiClient.post<ApiResponse<KycResetResponse>>('/kyc/reset');
-    return response.data.data;
+    return response.data.data!;
   } catch (error) {
     console.error('Failed to reset KYC:', error);
     throw error;

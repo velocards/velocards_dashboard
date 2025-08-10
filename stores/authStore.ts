@@ -50,8 +50,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
       
       // Set KYC status from user profile
-      if (response.data.user.kycStatus) {
-        useKycStore.getState().setKycStatus(response.data.user.kycStatus);
+      if (response.data.user.kycStatus && response.data.user.kycStatus !== 'not_started') {
+        useKycStore.getState().setKycStatus(response.data.user.kycStatus as 'pending' | 'approved' | 'rejected' | 'expired');
       }
     } catch (error: any) {
       const errorMessage = getErrorMessage(error);
@@ -157,8 +157,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
       
       // Set KYC status from user profile
-      if (response.data.kycStatus) {
-        useKycStore.getState().setKycStatus(response.data.kycStatus);
+      if (response.data.kycStatus && response.data.kycStatus !== 'not_started') {
+        useKycStore.getState().setKycStatus(response.data.kycStatus as 'pending' | 'approved' | 'rejected' | 'expired');
       }
     } catch (error) {
       
