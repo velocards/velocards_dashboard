@@ -9,6 +9,7 @@
   },
   "scripts": {
     "dev": "next dev",
+    "prebuild": "test -d ../shared || git clone https://$GITHUB_TOKEN@github.com/velocards/velocards_shared.git ../shared && cd ../shared && npm install && npm run build && cd -",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
