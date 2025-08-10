@@ -11,8 +11,6 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
   isCheckingAuth: boolean;
-  requiresTwoFactor: boolean;
-  pendingUser: User | null;
   
   // Actions
   login: (data: LoginRequest) => Promise<void>;
@@ -20,8 +18,6 @@ interface AuthState {
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
   clearError: () => void;
-  setPendingTwoFactor: (user: User) => void;
-  clearPendingTwoFactor: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -31,8 +27,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isLoading: true, // Start with loading true to prevent redirect on refresh
   error: null,
   isCheckingAuth: false,
-  requiresTwoFactor: false,
-  pendingUser: null,
   
   // Login action
   login: async (data: LoginRequest) => {
@@ -41,16 +35,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       const response = await authApi.login(data);
       
-      // Check if 2FA is required
-      if (response.data.requiresTwoFactor) {
-        set({
-          requiresTwoFactor: true,
-          pendingUser: response.data.user,
-          isLoading: false,
-          error: null,
-        });
-        return;
-      }
       
       // Save token if provided
       if (response.data.accessToken) {
@@ -63,8 +47,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         isAuthenticated: true,
         isLoading: false,
         error: null,
-        requiresTwoFactor: false,
-        pendingUser: null,
       });
       
       // Set KYC status from user profile
@@ -196,21 +178,5 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   // Clear error
   clearError: () => {
     set({ error: null });
-  },
-  
-  // Set pending two-factor
-  setPendingTwoFactor: (user: User) => {
-    set({ 
-      requiresTwoFactor: true, 
-      pendingUser: user 
-    });
-  },
-  
-  // Clear pending two-factor
-  clearPendingTwoFactor: () => {
-    set({ 
-      requiresTwoFactor: false, 
-      pendingUser: null 
-    });
   },
 }));
