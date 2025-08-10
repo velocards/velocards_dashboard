@@ -19,6 +19,7 @@
     "production": "npm run build && npm run start"
   },
   "dependencies": {
+    "@velocards/shared-types": "file:../shared",
     "@hookform/resolvers": "^5.1.1",
     "@marsidev/react-turnstile": "^1.1.0",
     "@sumsub/websdk": "^2.3.18",
