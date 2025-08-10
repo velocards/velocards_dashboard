@@ -1,6 +1,34 @@
 import { apiClient, ApiResponse } from './secureClient';
+import type { 
+  LoginRequest as SharedLoginRequest,
+  RegisterRequest as SharedRegisterRequest,
+  AuthTokens as SharedAuthTokens,
+  User as SharedUser
+} from '@velocards/shared-types';
 
-// Request types
+// Map shared types to dashboard conventions (camelCase)
+export interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string | null;
+  emailVerified: boolean;
+  kycStatus: 'not_started' | 'pending' | 'approved' | 'rejected';
+  accountStatus: 'active' | 'suspended' | 'closed';
+  virtualBalance: number;
+  tier: {
+    id: number;
+    tierName: string;
+    monthlyCardLimit: number;
+    transactionLimit: number;
+    benefits: string[];
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Dashboard-specific request types (some fields optional vs required)
 export interface LoginRequest {
   email: string;
   password: string;
@@ -16,32 +44,7 @@ export interface RegisterRequest {
   captchaToken?: string;
 }
 
-// Response types
-export interface AuthTokens {
-  accessToken: string;
-  refreshToken: string;
-}
-
-export interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phone: string | null;
-  emailVerified: boolean; // Backend confirmed this is returned
-  kycStatus: 'pending' | 'approved' | 'rejected';
-  accountStatus: 'active' | 'suspended' | 'closed';
-  virtualBalance: number;
-  tier: {
-    id: number;
-    tierName: string;
-    monthlyCardLimit: number;
-    transactionLimit: number;
-    benefits: string[];
-  };
-  createdAt: string;
-  updatedAt: string;
-}
+export type AuthTokens = SharedAuthTokens;
 
 export interface LoginResponse {
   user: User;

@@ -1,4 +1,10 @@
 import { apiClient } from './secureClient';
+import type {
+  Card as SharedCard,
+  CreateCardRequest as SharedCreateCardRequest,
+  UpdateCardRequest as SharedUpdateCardRequest,
+  CardTransaction as SharedCardTransaction
+} from '@velocards/shared-types';
 
 // Types
 export interface CardProgram {
@@ -8,6 +14,7 @@ export interface CardProgram {
   description: string; // User-friendly description
 }
 
+// Dashboard-specific Card type (independent to avoid conflicts)
 export interface Card {
   id: string;
   userId: string;
@@ -38,6 +45,7 @@ export interface Card {
   updatedAt?: string;
 }
 
+// Dashboard-specific CreateCardRequest
 export interface CreateCardRequest {
   programId: number;
   fundingAmount: number;
@@ -56,11 +64,15 @@ export interface CreateCardRequest {
   merchantRestrictions?: Card['merchantRestrictions'];
 }
 
+// Dashboard-specific UpdateCardRequest
 export interface UpdateCardRequest {
   nickname?: string;
   spendingLimit?: number;
   merchantRestrictions?: Card['merchantRestrictions'];
 }
+
+// Re-export CardTransaction type
+export type CardTransaction = SharedCardTransaction;
 
 
 // API functions

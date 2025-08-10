@@ -1,31 +1,9 @@
-// API Response Types
+// Re-export API types from shared package
+export type {
+  ApiResponse,
+  ApiErrorResponse as ApiError,
+  PaginationMeta,
+  PaginatedResponse
+} from '@velocards/shared-types/api';
 
-export interface PaginationMeta {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-}
-
-export interface ApiResponse<T> {
-  success: true;
-  data: T;
-  meta?: {
-    timestamp: string;
-    requestId: string;
-    pagination?: PaginationMeta;
-  };
-}
-
-export interface ApiError {
-  success: false;
-  error: {
-    code: string;
-    message: string;
-    details?: any;
-  };
-  meta: {
-    timestamp: string;
-    requestId: string;
-  };
-}
+// Additional dashboard-specific API types can be added below
