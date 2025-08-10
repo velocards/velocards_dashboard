@@ -82,10 +82,10 @@ export const useTwoFactorStore = create<TwoFactorState>((set, get) => ({
       
       await twoFactorApi.enable(payload);
       
-      // Update status
+      // Update status but keep setupData for backup codes display
       set({
         status: { isEnabled: true, lastUsed: null },
-        setupData: null,
+        // Don't clear setupData here - we need it for backup codes display
         isLoading: false,
       });
       
